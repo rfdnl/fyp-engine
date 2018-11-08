@@ -1,5 +1,10 @@
 #ifndef GRAPHICS_HPP
 #define GRAPHICS_HPP
+
+#ifndef GLFW_INCLUDE_GLU
+#define GLFW_INCLUDE_GLU
+#endif // GLFW_INCLUDE_GLU
+
 #include <GLFW/glfw3.h> // window library
 #include "Logger.hpp"
 #include "ILoggable.hpp"
