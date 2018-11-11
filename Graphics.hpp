@@ -5,13 +5,10 @@
 #define GLFW_INCLUDE_GLU
 #endif // GLFW_INCLUDE_GLU
 
-#include <GLFW/glfw3.h> // window library
-#include "Logger.hpp"
+#include <GLFW/glfw3.h>
 #include "ILoggable.hpp"
-#include <sstream>
 
 class Graphics : public ILoggable{
-private:
     GLFWwindow* window;
     bool InitWindow();
     bool InitGraphics();
@@ -19,11 +16,14 @@ private:
 public:
     static const int DEFAULT_WIDTH = 640;
     static const int DEFAULT_HEIGHT = 480;
-    static const int DEFAULT_POS = 50;
+    static const int DEFAULT_POS = 100;
 
-    Graphics(Logger* logPtr);
-    bool Init();
-    bool Create(const char* title, int width, int height, int x, int y);
+    Graphics(std::shared_ptr<Logger> logPtr):
+        ILoggable(logPtr, "Graphics")
+    {}
+
+    bool Initialize();
+    bool Create(const char* title, int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT, int x = DEFAULT_POS, int y = DEFAULT_POS);
     bool ShouldClose();
     void PollEvents();
     void Draw();

@@ -1,13 +1,5 @@
 #include "Graphics.hpp"
-
-#include <GLFW/glfw3.h> // window library
 #include "Engine.hpp"
-#include <iostream>
-
-// public
-Graphics::Graphics(Logger* logPtr){
-    SetLog(logPtr, "Graphics.cpp");
-}
 
 bool Graphics::InitWindow(){
     if (glfwInit() != GL_TRUE){
@@ -68,7 +60,7 @@ bool Graphics::InitWindow(){
     }
 }
 
-bool Graphics::Init(){
+bool Graphics::Initialize(){
     return InitWindow();
 }
 

@@ -1,14 +1,7 @@
 #include "Game.hpp"
-#include "Engine.hpp"
-#include <chrono>
-#include <iostream>
-
-Game::Game(){
-    engine = new Engine();
-}
 
 bool Game::IsRunning(){
-    return !engine->ShouldClose();
+    return !engine.ShouldClose();
 }
 
 void Game::Run(){
@@ -24,7 +17,7 @@ void Game::Run(){
 }
 
 void Game::PreInit(){
-    engine->Init();
+    engine.Initialize();
 }
 
 void Game::Init(){
@@ -33,7 +26,7 @@ void Game::Init(){
 }
 
 void Game::Start(){
-    engine->Start();
+    engine.Start();
 }
 
 void Game::FrameStart(){
@@ -42,28 +35,27 @@ void Game::FrameStart(){
 
 void Game::InputProcessing(){
     FrameStart();
-    engine->InputProcessing();
+    engine.InputProcessing();
 }
 
 void Game::Update(){
-    engine->Update(deltaTime);
+    engine.Update(deltaTime);
     CalculateFPS();
 }
 
 void Game::CalculateFPS(){
-    if (printFpsTime >= std::chrono::seconds(1)){
+    if (printFPStime >= std::chrono::seconds(1)){
         std::cout << std::chrono::duration_cast<std::chrono::seconds>(runTime).count() << " sec, " << frames << " fps" << std::endl;
-        printFpsTime -= std::chrono::seconds(1);
+        printFPStime -= std::chrono::seconds(1);
         frames = 0;
     }
-
-    printFpsTime += deltaTime;
     runTime += deltaTime;
+    printFPStime += deltaTime;
     frames++;
 }
 
 void Game::Draw(){
-    engine->Draw();
+    engine.Draw();
     FrameEnd();
 }
 
@@ -73,6 +65,5 @@ void Game::FrameEnd(){
 }
 
 void Game::End(){
-    engine->End();
-    delete engine;
+    engine.End();
 }

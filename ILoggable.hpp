@@ -1,24 +1,33 @@
 #ifndef ILOGGABLE_HPP
 #define ILOGGABLE_HPP
+
 #include "Logger.hpp"
-#include <sstream>
 #include <iostream>
+#include <memory>
 
 class ILoggable{
 private:
-    Logger* log;
-    const char* owner;
+    std::shared_ptr<Logger> logPtr;
+    const std::string CLASS_NAME = "ILoggable";
+    std::string className;
 protected:
     std::ostringstream ss;
-    void SetLog(Logger* log, const char* owner);
+
+    ILoggable(std::shared_ptr<Logger> logPtr, std::string className):logPtr(logPtr), className(className){
+        INFO(ss << CLASS_NAME << "(" << className << "), logPtr addr(" << logPtr.get() << "), count(" << logPtr.use_count() << ")");
+    }
+
+    ~ILoggable(){
+        INFO(ss << "~" << CLASS_NAME << "(" << className << "), logPtr addr(" << logPtr.get() << "), count(" << logPtr.use_count() << ")");
+    }
+
     void INFO(std::ostream& ostr);
-    void INFO(const char* message);
+    void INFO(std::string message);
     void WARN(std::ostream& ostr);
-    void WARN(const char* message);
+    void WARN(std::string message);
     void ERROR(std::ostream& ostr);
-    void ERROR(const char* message);
+    void ERROR(std::string message);
     void ClearStream();
-    void CloseLog();
 };
 
 #endif // ILOGGABLE_HPP

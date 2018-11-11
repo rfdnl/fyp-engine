@@ -2,27 +2,36 @@
 #define LOGGER_HPP
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
+#include <iostream>
 
 class Logger{
-    std::string INFO = "INFO";
-    std::string WARN = "WARN";
-    std::string ERROR = "ERROR";
-    std::string CLASS_NAME = "Logger.cpp";
-    std::string filename;
-    std::ostringstream ss;
-public:
-    void Write(std::string logtype, std::string owner, std::ostream& ostr);
-    Logger(const char* file = "log.txt");
-    void Info(std::string owner, std::ostream& ostr);
-    void Warn(std::string owner, std::ostream& ostr);
-    void Error(std::string owner, std::ostream& ostr);
+    const std::string INFO = "INFO";
+    const std::string WARN = "WARN";
+    const std::string ERROR = "ERROR";
+    const char* CLASS_NAME = "Logger";
 
-    void Write(std::string logtype, std::string owner, std::string msg);
-    void Info(std::string owner, std::string msg);
-    void Warn(std::string owner, std::string msg);
-    void Error(std::string owner, std::string msg);
+    std::ostringstream ss;
+    std::string filename;
+public:
+    Logger(std::string filename):filename(filename){
+        ss << "() " << filename << std::endl;
+    }
+
+    ~Logger(){
+        ss << "~() " << filename << std::endl;
+        Close();
+    }
+
+    void Write(std::string type, std::string className, std::string msg);
+    void Info(std::string className, std::string msg);
+    void Warn(std::string className, std::string msg);
+    void Error(std::string className, std::string msg);
+
+    void Write(std::string type, std::string className, std::ostream& ostr);
+    void Info(std::string className, std::ostream& ostr);
+    void Warn(std::string className, std::ostream& ostr);
+    void Error(std::string className, std::ostream& ostr);
     void Close();
 };
 

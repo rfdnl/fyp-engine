@@ -1,22 +1,13 @@
 #include "Fonts.hpp"
-#include <ft2build.h>   // font rendering
-#include FT_FREETYPE_H
-#include <iostream>
 
-// private
-bool Fonts::Init(){
-    INFO("Init()");
+bool Fonts::Initialize(){
+    INFO("Initialize()");
     if (FT_Init_FreeType(&freetypeLib)){
-        ERROR("Could not initialize FreeType library");
+        ERROR("Cannot initialize FreeType library");
         return false;
     }
-    INFO("Ready");
+    INFO("Ready!");
     return true;
-}
-
-// public
-Fonts::Fonts(Logger* logPtr){
-    SetLog(logPtr, "Fonts.cpp");
 }
 
 // Add("Arial20", "fonts/arial.ttf", 20);
@@ -44,9 +35,9 @@ void Fonts::Clear(){
     INFO("Clear()");
     INFO(ss << "Font total: " << fonts.size());
     for(std::map<std::string, FT_Face>::iterator iter = fonts.begin(); iter != fonts.end(); ++iter){
-        delete (iter->second);
-        INFO(ss << iter->first << " cleared (" << iter->second << ")");
-        fonts.erase(iter->first);
+        //delete iter->second;
+        INFO(ss << iter->first << "cleared (" << iter->second << ")");
+        fonts.erase(iter);
         INFO(ss << "Font total: " << fonts.size());
     }
 }

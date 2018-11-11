@@ -1,23 +1,26 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
-
+#include <memory>
+#include <iostream>
+#include <chrono>
+#include "ILoggable.hpp"
 #include "Fonts.hpp"
 #include "Graphics.hpp"
-#include "Logger.hpp"
-#include "ILoggable.hpp"
-#include <chrono>       // timer manipulation
 
 class Engine : public ILoggable
 {
-    Fonts* fonts;
-    Graphics* graphics;
+    Fonts fonts;
+    Graphics graphics;
     static bool running;
-    std::string CLASS_NAME = "Engine.cpp";
 public:
-    Engine();
+    Engine(std::shared_ptr<Logger> logPtr):
+        ILoggable(logPtr, "Engine"),
+        fonts(logPtr),
+        graphics(logPtr)
+    {}
     static bool IsRunning();
     bool ShouldClose();
-    bool Init();
+    bool Initialize();
     void Start();
     void InputProcessing();
     void Update(std::chrono::duration<double> deltaTime);
