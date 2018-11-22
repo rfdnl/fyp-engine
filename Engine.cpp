@@ -1,25 +1,27 @@
 #include "Engine.hpp"
 #include <iostream>
 
-bool Engine::running = true;
-
 bool Engine::IsRunning(){
     return running;
 }
 
-bool Engine::ShouldClose(){
-    return graphics.ShouldClose();
+bool Engine::IsOpen(){
+    return graphics.IsOpen();
 }
 
 bool Engine::Initialize(){
     if (!graphics.Initialize()) return false;
     if (!fonts.Initialize()) return false;
+    if (!audio.Initialize()) return false;
     return true;
 }
 
 void Engine::Start(){
     fonts.Add("Arial20", "fonts/arial.ttf", 20);
     graphics.Create("Window title");
+    audio.NewSource("test");
+    audio.NewBuffer("tick", "audio/tick.wav");
+	if (audio.CanPlay("test")) audio.Play("test", "tick");
 }
 
 void Engine::InputProcessing(){
@@ -27,7 +29,7 @@ void Engine::InputProcessing(){
 }
 
 void Engine::Update(std::chrono::duration<double> deltaTime){
-    //
+
 }
 
 void Engine::Draw(){
@@ -41,4 +43,5 @@ void Engine::Exit(){
 void Engine::End(){
     graphics.Close();
     fonts.Clear();
+    audio.End();
 }

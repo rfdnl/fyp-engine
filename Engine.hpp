@@ -6,26 +6,29 @@
 #include "ILoggable.hpp"
 #include "Fonts.hpp"
 #include "Graphics.hpp"
+#include "Audio.hpp"
 
 class Engine : public ILoggable
 {
+    bool running = true;
     Fonts fonts;
     Graphics graphics;
-    static bool running;
+    Audio audio;
 public:
     Engine(std::shared_ptr<Logger> logPtr):
         ILoggable(logPtr, "Engine"),
         fonts(logPtr),
-        graphics(logPtr)
+        graphics(logPtr),
+        audio(logPtr)
     {}
-    static bool IsRunning();
-    bool ShouldClose();
+    bool IsRunning();
+    bool IsOpen();
     bool Initialize();
     void Start();
     void InputProcessing();
     void Update(std::chrono::duration<double> deltaTime);
     void Draw();
-    static void Exit();
+    void Exit();
     void End();
 };
 

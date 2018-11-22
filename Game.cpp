@@ -1,14 +1,14 @@
 #include "Game.hpp"
 
 bool Game::IsRunning(){
-    return !engine.ShouldClose();
+    return engine.IsRunning() && engine.IsOpen();
 }
 
 void Game::Run(){
     PreInit();
     Init();
     Start();
-    while(Engine::IsRunning()){
+    while(IsRunning()){
         InputProcessing();
         Update();
         Draw();

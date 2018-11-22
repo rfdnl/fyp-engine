@@ -1,5 +1,6 @@
 #include "Graphics.hpp"
-#include "Engine.hpp"
+
+bool Graphics::isOpen = false;
 
 bool Graphics::InitWindow(){
     if (glfwInit() != GL_TRUE){
@@ -71,6 +72,7 @@ bool Graphics::Create(const char* title, int width, int height, int x, int y){
         glfwTerminate();
         return false;
     }
+    isOpen = true;
     INFO("Window created");
     glfwSetWindowPos(window, x, y);
     glfwMakeContextCurrent(window);
@@ -80,8 +82,8 @@ bool Graphics::Create(const char* title, int width, int height, int x, int y){
     return InitGraphics();
 }
 
-bool Graphics::ShouldClose(){
-    return glfwWindowShouldClose(window);
+bool Graphics::IsOpen(){
+    return isOpen;
 }
 
 bool Graphics::InitGraphics(){
@@ -115,11 +117,11 @@ void Graphics::Draw(){
 }
 
 void Graphics::WindowClosing(GLFWwindow* window){
-    Engine::Exit();
+    isOpen = false;
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
 void Graphics::Close(){
-    WindowClosing(window);
+    if (isOpen) WindowClosing(window);
 }

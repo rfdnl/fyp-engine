@@ -18,6 +18,9 @@ Game.o: mkdir.obj Game.cpp
 Graphics.o: mkdir.obj Graphics.cpp
 	mingw32-g++.exe -Wall -g -IC\:\MinGW\include -c Graphics.cpp -o obj\Graphics.o
 
+Audio.o: mkdir.obj Audio.cpp
+	mingw32-g++.exe -Wall -g -IC\:\MinGW\include -c Audio.cpp -o obj\Audio.o
+
 ILoggable.o: mkdir.obj ILoggable.cpp
 	mingw32-g++.exe -Wall -g -IC\:\MinGW\include -c ILoggable.cpp -o obj\ILoggable.o
 
@@ -27,5 +30,5 @@ Logger.o: mkdir.obj Logger.cpp
 main.o: mkdir.obj main.cpp
 	mingw32-g++.exe -Wall -g -IC\:\MinGW\include -c main.cpp -o obj\main.o
 
-all: mkdir.exe main.o Logger.o ILoggable.o Graphics.o Game.o Fonts.o Engine.o
+all: mkdir.exe main.o Logger.o ILoggable.o Graphics.o Game.o Audio.o Fonts.o Engine.o
 	mingw32-g++.exe -LC\:\MinGW\lib obj\Engine.o obj\Fonts.o obj\Game.o obj\Graphics.o obj\ILoggable.o obj\Logger.o obj\main.o -o exe\test.exe -lglfw3 -lOpenGL32 -lglu32 -lfreetype -lgdi32

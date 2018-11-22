@@ -36,7 +36,7 @@ void Fonts::Clear(){
     INFO(ss << "Font total: " << fonts.size());
     for(std::map<std::string, FT_Face>::iterator iter = fonts.begin(); iter != fonts.end(); ++iter){
         //delete iter->second;
-        INFO(ss << iter->first << "cleared (" << iter->second << ")");
+        INFO(ss << iter->first << " cleared (" << iter->second << ")");
         fonts.erase(iter);
         INFO(ss << "Font total: " << fonts.size());
     }

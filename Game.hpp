@@ -5,11 +5,11 @@
 #include "Engine.hpp"
 
 class Game{
+    int frames = 0;
+    float fps = 0.0f;
     Engine engine;
     std::chrono::duration<double> printFPStime, runTime, deltaTime;
     std::chrono::high_resolution_clock::time_point frameStart, frameEnd;
-    int frames = 0;
-    float fps = 0.0f;
 
     void FrameStart();
     void CalculateFPS();
