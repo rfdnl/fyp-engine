@@ -32,12 +32,17 @@ FT_Face Fonts::Get(std::string fontKey){
 }
 
 void Fonts::Clear(){
-    INFO("Clear()");
+    INFO("Clearing");
     INFO(ss << "Font total: " << fonts.size());
-    for(std::map<std::string, FT_Face>::iterator iter = fonts.begin(); iter != fonts.end(); ++iter){
+
+    /*
+    for(std::map<std::string, FT_Face>::iterator iter = fonts.begin(); iter != fonts.end();){
         //delete iter->second;
         INFO(ss << iter->first << " cleared (" << iter->second << ")");
         fonts.erase(iter);
         INFO(ss << "Font total: " << fonts.size());
+        iter = std::next(iter);
     }
+    */
+    fonts.clear();
 }

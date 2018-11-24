@@ -5,11 +5,11 @@
 #include "Engine.hpp"
 
 class Game{
+    std::chrono::duration<double> printFPStime, runTime, deltaTime;
+    std::chrono::high_resolution_clock::time_point frameStart, frameEnd;
     int frames = 0;
     float fps = 0.0f;
     Engine engine;
-    std::chrono::duration<double> printFPStime, runTime, deltaTime;
-    std::chrono::high_resolution_clock::time_point frameStart, frameEnd;
 
     void FrameStart();
     void CalculateFPS();
@@ -24,10 +24,10 @@ class Game{
     bool IsRunning();
 public:
     Game():
-        engine(std::make_shared<Logger>("log.txt")),
         printFPStime(std::chrono::duration<double>::zero()),
         runTime(std::chrono::duration<double>::zero()),
-        deltaTime(std::chrono::duration<double>::zero())
+        deltaTime(std::chrono::duration<double>::zero()),
+        engine(std::make_shared<Logger>("log.txt"))
     {
         std::cout << "Game()" << std::endl;
     }

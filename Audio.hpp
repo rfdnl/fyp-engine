@@ -6,18 +6,18 @@
 #include <map>
 #include "ILoggable.hpp"
 
-
 class Audio : public ILoggable
 {
 	ALboolean enumeration;
 	const ALCchar *devices;
-	const ALchar *defaultDeviceName;
+	const ALCchar *defaultDeviceName;
     ALCdevice* device;
     ALCcontext* context;
 	std::map<std::string, ALuint> buffers;
 	std::map<std::string, ALuint> sources;
     ALfloat listenerOri[];
 
+	bool InitAlut();
     bool CreateContext();
     bool OpenDevice(const ALCchar* deviceName);
 	void GetDefaultDeviceName();

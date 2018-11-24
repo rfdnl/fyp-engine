@@ -1,27 +1,12 @@
 #include "Audio.hpp"
 #include <cstring>
 
-/*
-#include "binaryHeader/wav_mono_16bit_44100.h"
-#include "binaryHeader/wav_mono_16bit_48000.h"
-
-#include "binaryHeader/wav_stereo_16bit_44100.h"
-#include "binaryHeader/wav_stereo_16bit_48000.h"
-
-#include "binaryHeader/wav_stereo_24bit_44100.h"
-#include "binaryHeader/wav_stereo_24bit_48000.h"
-
-#include "binaryHeader/wav_stereo_8bit_44100.h"
-#include "binaryHeader/wav_stereo_8bit_48000.h"
-*/
-
-bool Audio::OpenDevice(const ALCchar* deviceName){
-	device = alcOpenDevice(deviceName);
-	if (!device){
-		ERROR("Cannot open device!");
+bool Audio::InitAlut(){
+	if (!alutInitWithoutContext(NULL, NULL)) {
+		CheckAlError("alutInit");
 		return false;
-    }
-	INFO(ss << "Device open: " << alcGetString(device, ALC_DEVICE_SPECIFIER));
+	}
+	INFO("InitAlut - OK");
 	return true;
 }
 
@@ -30,18 +15,60 @@ bool Audio::EnumerateDevice(){
     if(enumeration == AL_FALSE){
 		WARN("Enumeration not supported");
 		return false;
-	} else {
-		INFO("Enumeration supported");
-		return true;
 	}
+	INFO("Enumeration supported");
+	return true;
+}
+
+void Audio::RetrieveDeviceList(const ALchar* devices){
+	const ALchar *device = devices, *next = devices + 1;
+	size_t len = 0;
+	std::cout << "Device list:" << std::endl;
+	std::cout << "------------" << std::endl;
+	while(device && *device != '\0' && next && *next != '\0'){
+		std::cout << device << std::endl;
+		len = strlen(device);
+		device += (len+1);
+		next += (len+2);
+	}
+	std::cout << "------------" << std::endl;
+}
+
+void Audio::GetDefaultDeviceName(){
+	defaultDeviceName = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+	if (!defaultDeviceName){
+		ERROR("GetDefaultDeviceName - Fail");
+	} else{
+		INFO(ss << "Default device name: " << defaultDeviceName);
+	}
+}
+
+bool Audio::OpenDevice(const ALCchar* deviceName){
+	//device = alcOpenDevice(deviceName);
+	if (!device){
+		ERROR("Cannot open device!");
+		return false;
+    } else {
+		device = alcOpenDevice("OpenAL Soft");
+    }
+	INFO(ss << "Device open: " << alcGetString(device, ALC_DEVICE_SPECIFIER));
+	return true;
+}
+
+void Audio::InitListener(){
+	alListener3f(AL_POSITION, 0, 0, 1.0f);
+	alListener3f(AL_VELOCITY, 0, 0, 0);
+	alListenerfv(AL_ORIENTATION, listenerOri);
 }
 
 bool Audio::CreateContext(){
 	context = alcCreateContext(device, NULL);
 	if (!alcMakeContextCurrent(context)){
+		ERROR("Cannot create context");
 		CheckAlError("CreateContext");
 		return false;
 	}
+	INFO("Context created");
 	return true;
 }
 
@@ -52,20 +79,6 @@ bool Audio::CreateContext(){
 // The list of devices is organized as a string devices
 // are separated with a NULL character and
 // the list is terminated by two NULL characters
-void Audio::RetrieveDeviceList(const ALchar* devices){
-	const ALchar *device = devices, *next = devices + 1;
-	size_t len = 0;
-	//std::cout << "Device list:" << std::endl;
-	//std::cout << "------------" << std::endl;
-	while(device && *device != '\0' && next && *next != '\0'){
-		//std::cout << device << std::endl;
-		len = strlen(device);
-		device += (len+1);
-		next += (len+2);
-	}
-	//std::cout << "------------" << std::endl;
-}
-
 ALenum Audio::ToALformat(short channels, short bitdepth){
 	bool stereo = (channels > 1);
 
@@ -94,23 +107,8 @@ bool Audio::CheckAlError(std::string functionName, int line, std::string filenam
 	return true;
 }
 
-void Audio::GetDefaultDeviceName(){
-	if (!defaultDeviceName){
-		defaultDeviceName = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
-	}
-}
-
-void Audio::InitListener(){
-	alListener3f(AL_POSITION, 0, 0, 1.0f);
-	alListener3f(AL_VELOCITY, 0, 0, 0);
-	alListenerfv(AL_ORIENTATION, listenerOri);
-}
-
 bool Audio::Initialize(){
-	if (!alutInitWithoutContext(NULL, NULL)) {
-		CheckAlError("alutInit");
-		return false;
-	}
+	if (!InitAlut()) return false;
 	if (!EnumerateDevice()) return false;
 	RetrieveDeviceList(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
 	GetDefaultDeviceName();
@@ -163,23 +161,31 @@ bool Audio::CanPlay(std::string sourceKey){
 }
 
 void Audio::End(){
-	INFO(ss << "Sources total: " << sources.size());
-	for(std::map<std::string, ALuint>::iterator iter = sources.begin(); iter != sources.end(); ++iter){
+	//INFO(ss << "Clearing Sources: " << sources.size());
+	/*
+	for(std::map<std::string, ALuint>::iterator iter = sources.begin(); iter != sources.end();){
         //delete iter->second;
         INFO(ss << iter->first << " cleared (" << iter->second << ")");
         alDeleteSources(1, &(iter->second));
         sources.erase(iter);
         INFO(ss << "Sources total: " << sources.size());
+        iter = std::next(iter);
     }
+    */
+    //sources.clear();
 
-	INFO(ss << "Buffers total: " << buffers.size());
-    for(std::map<std::string, ALuint>::iterator iter = buffers.begin(); iter != buffers.end(); ++iter){
+	//INFO(ss << "Clearing Buffers: " << buffers.size());
+	/*
+    for(std::map<std::string, ALuint>::iterator iter = buffers.begin(); iter != buffers.end();){
         //delete iter->second;
         INFO(ss << iter->first << " cleared (" << iter->second << ")");
         alDeleteBuffers(1, &(iter->second));
         buffers.erase(iter);
         INFO(ss << "Buffers total: " << buffers.size());
+        iter = std::next(iter);
     }
+    */
+    //buffers.clear();
 
     device = alcGetContextsDevice(context);
     alcMakeContextCurrent(NULL);
