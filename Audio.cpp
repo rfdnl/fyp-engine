@@ -1,9 +1,20 @@
 #include "Audio.hpp"
 #include <cstring>
 
+bool Audio::Initialize(){
+	if (!InitAlut()) return false;
+	if (!EnumerateDevice()) return false;
+	RetrieveDeviceList(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+	GetDefaultDeviceName();
+	OpenDevice(defaultDeviceName);
+	CheckAlError("Initialize");
+	InitListener();
+	return CreateContext();
+}
+
 bool Audio::InitAlut(){
 	if (!alutInitWithoutContext(NULL, NULL)) {
-		CheckAlError("alutInit");
+		CheckAlError("InitAlut");
 		return false;
 	}
 	INFO("InitAlut - OK");
@@ -13,10 +24,10 @@ bool Audio::InitAlut(){
 bool Audio::EnumerateDevice(){
 	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
     if(enumeration == AL_FALSE){
-		WARN("Enumeration not supported");
+		WARN("EnumerateDevice - FAIL");
 		return false;
 	}
-	INFO("Enumeration supported");
+	INFO("EnumerateDevice - OK");
 	return true;
 }
 
@@ -37,21 +48,20 @@ void Audio::RetrieveDeviceList(const ALchar* devices){
 void Audio::GetDefaultDeviceName(){
 	defaultDeviceName = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 	if (!defaultDeviceName){
-		ERROR("GetDefaultDeviceName - Fail");
-	} else{
-		INFO(ss << "Default device name: " << defaultDeviceName);
+		ERROR("GetDefaultDeviceName - FAIL");
+	} else {
+		INFO(ss << "GetDefaultDeviceName: " << defaultDeviceName);
 	}
 }
 
 bool Audio::OpenDevice(const ALCchar* deviceName){
-	//device = alcOpenDevice(deviceName);
+	device = alcOpenDevice(deviceName);
 	if (!device){
-		ERROR("Cannot open device!");
+		ERROR("OpenDevice - FAIL");
 		return false;
-    } else {
-		device = alcOpenDevice("OpenAL Soft");
     }
-	INFO(ss << "Device open: " << alcGetString(device, ALC_DEVICE_SPECIFIER));
+    //device = alcOpenDevice("OpenAL Soft");
+	INFO(ss << "OpenDevice: " << alcGetString(device, ALC_DEVICE_SPECIFIER));
 	return true;
 }
 
@@ -64,11 +74,10 @@ void Audio::InitListener(){
 bool Audio::CreateContext(){
 	context = alcCreateContext(device, NULL);
 	if (!alcMakeContextCurrent(context)){
-		ERROR("Cannot create context");
-		CheckAlError("CreateContext");
+		ERROR("CreateContext - FAIL");
 		return false;
 	}
-	INFO("Context created");
+	INFO("CreateContext - OK");
 	return true;
 }
 
@@ -105,17 +114,6 @@ bool Audio::CheckAlError(std::string functionName, int line, std::string filenam
 		return false;
 	}
 	return true;
-}
-
-bool Audio::Initialize(){
-	if (!InitAlut()) return false;
-	if (!EnumerateDevice()) return false;
-	RetrieveDeviceList(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-	GetDefaultDeviceName();
-	OpenDevice(defaultDeviceName);
-	CheckAlError("Init");
-	InitListener();
-	return CreateContext();
 }
 
 // request new sound ID
