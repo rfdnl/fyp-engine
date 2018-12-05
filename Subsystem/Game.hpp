@@ -4,23 +4,16 @@
 #include <chrono>
 #include "Engine.hpp"
 
-class Game{
+class Game : public Engine
+{
 private:
     std::chrono::duration<double> printFPStime, runTime, deltaTime, frameMaxDuration, frameDuration;
     std::chrono::high_resolution_clock::time_point frameStart, frameEnd;
     int frames = 0;
     float fps = 0.0f;
-    Engine engine;
 
     void CalculateFPS();
     bool IsRunning();
-    void _PreInit();
-    void _Init();
-    void _Start();
-    void _InputProcessing();
-    void _Update();
-    void _Draw();
-    void _End();
     virtual void Init() = 0;
     virtual void Start() = 0;
     virtual void Update(std::chrono::duration<double> deltaTime) = 0;
@@ -29,12 +22,12 @@ private:
     void SetMaxFPS(int n);
 public:
     Game():
+    	Engine(std::make_shared<Logger>("log.txt")),
         printFPStime(std::chrono::duration<double>::zero()),
         runTime(std::chrono::duration<double>::zero()),
         deltaTime(std::chrono::duration<double>::zero()),
         frameMaxDuration(std::chrono::duration<double>::zero()),
-        frameDuration(std::chrono::duration<double>::zero()),
-        engine(std::make_shared<Logger>("log.txt"))
+        frameDuration(std::chrono::duration<double>::zero())
     {
         std::cout << "Game()" << std::endl;
     }

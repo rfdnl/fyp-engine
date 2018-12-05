@@ -62,7 +62,7 @@ bool Graphics::InitWindow(){
 }
 
 bool Graphics::Initialize(){
-    return InitWindow();
+	return InitWindow();
 }
 
 bool Graphics::Create(const char* title, int width, int height, int x, int y){
@@ -87,24 +87,63 @@ bool Graphics::IsOpen(){
 }
 
 bool Graphics::InitGraphics(int width, int height, int x, int y){
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	// test start
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (err != GLEW_OK){
+		ERROR(ss << "GLEW init failed - " << glewGetErrorString(err));
+		return false;
+	}
+	// test end
+
+
+    glCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
 
 	// The official code for "Setting Your Raster Position to a Pixel Location" (i.e. set up a camera for 2D screen)
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, width, height, 0, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glCall(glViewport(0, 0, width, height));
+	glCall(glMatrixMode(GL_PROJECTION));
+	glCall(glLoadIdentity());
+	glCall(glOrtho(0, width, height, 0, -1, 1));
+	glCall(glMatrixMode(GL_MODELVIEW));
+	glCall(glLoadIdentity());
 
 	// Make some OpenGL properties better for 2D and enable alpha channel.
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
-	if (CheckError("InitGraphics")) return false;
-	INFO("OpenGL ready");
+	glCall(glDisable(GL_CULL_FACE));
+	glCall(glDisable(GL_DEPTH_TEST));
+	glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+	glCall(glEnable(GL_BLEND));
+	glCall(glDisable(GL_ALPHA_TEST));
+	//if (CheckError("InitGraphics")) return false;
+	INFO(ss << "OpenGL v" << glGetString(GL_VERSION));
+
+	// test start
+	float position[] = {
+		-0.5f, -0.5f,	// 0
+		0.5f, -0.5f, 	// 1
+		0.5f, 0.5f, 	// 2
+		-0.5f, 0.5f		// 3
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	va = std::make_shared<VertexArray>();
+	vb = std::make_shared<VertexBuffer>(position, 4 * 2 * sizeof(float));
+	layout->Push<float>(2);
+	va->AddBuffer(*vb, *layout);
+	ib = std::make_shared<IndexBuffer>(indices, 3 * 2);
+	shader = std::make_shared<Shader>("shader/Basic.shader");
+	shader->Bind();
+	shader->SetUniform4f("myColor", red, 0.3f, 0.8f, 1.0f);
+	va->Unbind();
+	vb->Unbind();
+	ib->Unbind();
+	shader->Unbind();
+
+	// test end
+
 	return true;
 }
 
@@ -115,46 +154,63 @@ void Graphics::PollEvents(){
 
 void Graphics::WindowClosing(GLFWwindow* window){
     isOpen = false;
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    //glCall(glDeleteProgram(shaderBuffer));
+    //glfwDestroyWindow(window);
+    //glfwTerminate();
 }
 
 void Graphics::Close(){
-    if (isOpen) WindowClosing(window);
+    if (isOpen){
+		WindowClosing(window);
+    }
+
+	// clear memory here
+    va.reset();
+    vb.reset();
+    ib.reset();
+    layout.reset();
+    shader.reset();
 }
 
-bool Graphics::CheckError(std::string functionName, int line, std::string comment){
+bool Graphics::CheckError(std::string functionName, int line){
 	GLenum errorCode = glGetError();
 	bool error = errorCode != GL_NO_ERROR;
     if (error){
-        ERROR(ss << functionName << " -- OpenGL (" << errorCode << "), msg: " << gluErrorString(errorCode));
+        ERROR(ss << functionName << " (" << errorCode << "), msg: " << gluErrorString(errorCode) << ", ln: " << line);
     }
     return error;
 }
 
 void Graphics::Draw(){
-    glClear( GL_COLOR_BUFFER_BIT );
+	if (isOpen){
+		glCall(glClear( GL_COLOR_BUFFER_BIT ));
 
-    /*
-    glBegin( GL_QUADS );
-        glVertex2f( -0.5f, -0.5f );
-        glVertex2f(  0.5f, -0.5f );
-        glVertex2f(  0.5f,  0.5f );
-        glVertex2f( -0.5f,  0.5f );
-    glEnd();
-	*/
-	for(unsigned int i = 0; i < onFrame.size(); i++){
-		std::shared_ptr<Texture> texture = onFrame[i];
-		texture->Draw();
-		CheckError("Draw");
+		/*
+		for(unsigned int i = 0; i < onFrame.size(); i++){
+			std::shared_ptr<Texture> texture = onFrame[i];
+			texture->Draw();
+			//CheckError("Draw");
+		}
+
+		std::vector<std::shared_ptr<Texture>> emptyFrame;
+		onFrame.clear();
+		onFrame.swap(emptyFrame);
+		*/
+
+		// test start
+		shader->Bind();
+		shader->SetUniform4f("myColor", red, 0.3f, 0.8f, 1.0f);
+
+		Draw(*va, *ib, *shader);
+
+		if (red > 1.0f) increment = -0.05f;
+		else if (red < 0.0f) increment = 0.05f;
+
+		red += increment;
+		// test end
+		glCall(glFlush());
+		glfwSwapBuffers(window);
 	}
-
-	std::vector<std::shared_ptr<Texture>> emptyFrame;
-	onFrame.clear();
-	onFrame.swap(emptyFrame);
-
-    glFlush();
-    glfwSwapBuffers(window);
 }
 
 std::shared_ptr<Texture> Graphics::NewTexture(const char* filename){
@@ -165,4 +221,21 @@ std::shared_ptr<Texture> Graphics::NewTexture(const char* filename){
 
 void Graphics::Draw(std::shared_ptr<Texture> texture){
 	onFrame.push_back(texture);
+}
+
+void Graphics::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {
+	/*
+		shader.Bind();
+		shader.SetUniform4f();
+	*/
+	shader.Bind();
+	va.Bind();
+	ib.Bind();
+	glCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+
+Graphics::~Graphics(){
+	std::cout << "~Graphics()" << std::endl;
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }

@@ -15,7 +15,7 @@ INC =
 CFLAGS = -Wall
 RESINC = 
 LIBDIR = 
-LIB = -lglfw3 -lopengl32 -lglu32 -lfreetype -lgdi32 -lopenal32 -lcommon -lalut
+LIB = -lglfw3 -lopengl32 -lglu32 -lfreetype -lgdi32 -lopenal32 -lcommon -lglew32 -lalut
 LDFLAGS = 
 
 INC_DEBUG = $(INC)
@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj\\Release
 DEP_RELEASE = 
 OUT_RELEASE = bin\\Release\\game-engine-shared.exe
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)\\main.o $(OBJDIR_DEBUG)\\TestGame.o $(OBJDIR_DEBUG)\\Subsystem\\Utility\\Texture.o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\lodepng.o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\Logger.o $(OBJDIR_DEBUG)\\Subsystem\\Audio.o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\ILoggable.o $(OBJDIR_DEBUG)\\Subsystem\\Graphics.o $(OBJDIR_DEBUG)\\Subsystem\\Game.o $(OBJDIR_DEBUG)\\Subsystem\\Fonts.o $(OBJDIR_DEBUG)\\Subsystem\\Engine.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)\\Subsystem\\Fonts.o $(OBJDIR_DEBUG)\\Subsystem\\Game.o $(OBJDIR_DEBUG)\\Subsystem\\Graphics.o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\ILoggable.o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\Logger.o $(OBJDIR_DEBUG)\\Subsystem\\Vendor\\lodepng.o $(OBJDIR_DEBUG)\\TestGame.o $(OBJDIR_DEBUG)\\main.o $(OBJDIR_DEBUG)\\Subsystem\\Audio.o $(OBJDIR_DEBUG)\\Subsystem\\Engine.o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexBufferLayout.o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexBuffer.o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexArray.o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\Texture.o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\Shader.o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\IndexBuffer.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)\\main.o $(OBJDIR_RELEASE)\\TestGame.o $(OBJDIR_RELEASE)\\Subsystem\\Utility\\Texture.o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\lodepng.o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\Logger.o $(OBJDIR_RELEASE)\\Subsystem\\Audio.o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\ILoggable.o $(OBJDIR_RELEASE)\\Subsystem\\Graphics.o $(OBJDIR_RELEASE)\\Subsystem\\Game.o $(OBJDIR_RELEASE)\\Subsystem\\Fonts.o $(OBJDIR_RELEASE)\\Subsystem\\Engine.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)\\Subsystem\\Fonts.o $(OBJDIR_RELEASE)\\Subsystem\\Game.o $(OBJDIR_RELEASE)\\Subsystem\\Graphics.o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\ILoggable.o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\Logger.o $(OBJDIR_RELEASE)\\Subsystem\\Vendor\\lodepng.o $(OBJDIR_RELEASE)\\TestGame.o $(OBJDIR_RELEASE)\\main.o $(OBJDIR_RELEASE)\\Subsystem\\Audio.o $(OBJDIR_RELEASE)\\Subsystem\\Engine.o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexBufferLayout.o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexBuffer.o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexArray.o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\Texture.o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\Shader.o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\IndexBuffer.o
 
 all: debug release
 
@@ -50,10 +50,11 @@ clean: clean_debug clean_release
 
 before_debug: 
 	cmd /c if not exist bin\\Debug md bin\\Debug
-	cmd /c if not exist $(OBJDIR_DEBUG) md $(OBJDIR_DEBUG)
-	cmd /c if not exist $(OBJDIR_DEBUG)\\Subsystem\\Utility md $(OBJDIR_DEBUG)\\Subsystem\\Utility
-	cmd /c if not exist $(OBJDIR_DEBUG)\\Subsystem\\Helper md $(OBJDIR_DEBUG)\\Subsystem\\Helper
 	cmd /c if not exist $(OBJDIR_DEBUG)\\Subsystem md $(OBJDIR_DEBUG)\\Subsystem
+	cmd /c if not exist $(OBJDIR_DEBUG)\\Subsystem\\Helper md $(OBJDIR_DEBUG)\\Subsystem\\Helper
+	cmd /c if not exist $(OBJDIR_DEBUG)\\Subsystem\\Vendor md $(OBJDIR_DEBUG)\\Subsystem\\Vendor
+	cmd /c if not exist $(OBJDIR_DEBUG) md $(OBJDIR_DEBUG)
+	cmd /c if not exist $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics md $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics
 
 after_debug: 
 
@@ -62,53 +63,70 @@ debug: before_debug out_debug after_debug
 out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
 
-$(OBJDIR_DEBUG)\\main.o: main.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)\\main.o
-
-$(OBJDIR_DEBUG)\\TestGame.o: TestGame.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c TestGame.cpp -o $(OBJDIR_DEBUG)\\TestGame.o
-
-$(OBJDIR_DEBUG)\\Subsystem\\Utility\\Texture.o: Subsystem\\Utility\\Texture.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Utility\\Texture.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Utility\\Texture.o
-
-$(OBJDIR_DEBUG)\\Subsystem\\Helper\\lodepng.o: Subsystem\\Helper\\lodepng.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Helper\\lodepng.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\lodepng.o
-
-$(OBJDIR_DEBUG)\\Subsystem\\Helper\\Logger.o: Subsystem\\Helper\\Logger.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Helper\\Logger.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\Logger.o
-
-$(OBJDIR_DEBUG)\\Subsystem\\Audio.o: Subsystem\\Audio.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Audio.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Audio.o
-
-$(OBJDIR_DEBUG)\\Subsystem\\Helper\\ILoggable.o: Subsystem\\Helper\\ILoggable.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Helper\\ILoggable.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\ILoggable.o
-
-$(OBJDIR_DEBUG)\\Subsystem\\Graphics.o: Subsystem\\Graphics.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Graphics.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Graphics.o
+$(OBJDIR_DEBUG)\\Subsystem\\Fonts.o: Subsystem\\Fonts.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Fonts.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Fonts.o
 
 $(OBJDIR_DEBUG)\\Subsystem\\Game.o: Subsystem\\Game.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Game.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Game.o
 
-$(OBJDIR_DEBUG)\\Subsystem\\Fonts.o: Subsystem\\Fonts.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Fonts.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Fonts.o
+$(OBJDIR_DEBUG)\\Subsystem\\Graphics.o: Subsystem\\Graphics.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Graphics.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Graphics.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Helper\\ILoggable.o: Subsystem\\Helper\\ILoggable.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Helper\\ILoggable.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\ILoggable.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Helper\\Logger.o: Subsystem\\Helper\\Logger.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Helper\\Logger.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Helper\\Logger.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Vendor\\lodepng.o: Subsystem\\Vendor\\lodepng.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Vendor\\lodepng.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Vendor\\lodepng.o
+
+$(OBJDIR_DEBUG)\\TestGame.o: TestGame.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c TestGame.cpp -o $(OBJDIR_DEBUG)\\TestGame.o
+
+$(OBJDIR_DEBUG)\\main.o: main.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)\\main.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Audio.o: Subsystem\\Audio.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Audio.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Audio.o
 
 $(OBJDIR_DEBUG)\\Subsystem\\Engine.o: Subsystem\\Engine.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Engine.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Engine.o
 
+$(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexBufferLayout.o: Subsystem\\Component\\Graphics\\VertexBufferLayout.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Component\\Graphics\\VertexBufferLayout.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexBufferLayout.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexBuffer.o: Subsystem\\Component\\Graphics\\VertexBuffer.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Component\\Graphics\\VertexBuffer.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexBuffer.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexArray.o: Subsystem\\Component\\Graphics\\VertexArray.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Component\\Graphics\\VertexArray.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\VertexArray.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\Texture.o: Subsystem\\Component\\Graphics\\Texture.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Component\\Graphics\\Texture.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\Texture.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\Shader.o: Subsystem\\Component\\Graphics\\Shader.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Component\\Graphics\\Shader.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\Shader.o
+
+$(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\IndexBuffer.o: Subsystem\\Component\\Graphics\\IndexBuffer.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Subsystem\\Component\\Graphics\\IndexBuffer.cpp -o $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics\\IndexBuffer.o
+
 clean_debug: 
 	cmd /c del /f $(OBJ_DEBUG) $(OUT_DEBUG)
 	cmd /c rd bin\\Debug
-	cmd /c rd $(OBJDIR_DEBUG)
-	cmd /c rd $(OBJDIR_DEBUG)\\Subsystem\\Utility
-	cmd /c rd $(OBJDIR_DEBUG)\\Subsystem\\Helper
 	cmd /c rd $(OBJDIR_DEBUG)\\Subsystem
+	cmd /c rd $(OBJDIR_DEBUG)\\Subsystem\\Helper
+	cmd /c rd $(OBJDIR_DEBUG)\\Subsystem\\Vendor
+	cmd /c rd $(OBJDIR_DEBUG)
+	cmd /c rd $(OBJDIR_DEBUG)\\Subsystem\\Component\\Graphics
 
 before_release: 
 	cmd /c if not exist bin\\Release md bin\\Release
-	cmd /c if not exist $(OBJDIR_RELEASE) md $(OBJDIR_RELEASE)
-	cmd /c if not exist $(OBJDIR_RELEASE)\\Subsystem\\Utility md $(OBJDIR_RELEASE)\\Subsystem\\Utility
-	cmd /c if not exist $(OBJDIR_RELEASE)\\Subsystem\\Helper md $(OBJDIR_RELEASE)\\Subsystem\\Helper
 	cmd /c if not exist $(OBJDIR_RELEASE)\\Subsystem md $(OBJDIR_RELEASE)\\Subsystem
+	cmd /c if not exist $(OBJDIR_RELEASE)\\Subsystem\\Helper md $(OBJDIR_RELEASE)\\Subsystem\\Helper
+	cmd /c if not exist $(OBJDIR_RELEASE)\\Subsystem\\Vendor md $(OBJDIR_RELEASE)\\Subsystem\\Vendor
+	cmd /c if not exist $(OBJDIR_RELEASE) md $(OBJDIR_RELEASE)
+	cmd /c if not exist $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics md $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics
 
 after_release: 
 
@@ -117,46 +135,62 @@ release: before_release out_release after_release
 out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
 
-$(OBJDIR_RELEASE)\\main.o: main.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)\\main.o
-
-$(OBJDIR_RELEASE)\\TestGame.o: TestGame.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c TestGame.cpp -o $(OBJDIR_RELEASE)\\TestGame.o
-
-$(OBJDIR_RELEASE)\\Subsystem\\Utility\\Texture.o: Subsystem\\Utility\\Texture.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Utility\\Texture.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Utility\\Texture.o
-
-$(OBJDIR_RELEASE)\\Subsystem\\Helper\\lodepng.o: Subsystem\\Helper\\lodepng.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Helper\\lodepng.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\lodepng.o
-
-$(OBJDIR_RELEASE)\\Subsystem\\Helper\\Logger.o: Subsystem\\Helper\\Logger.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Helper\\Logger.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\Logger.o
-
-$(OBJDIR_RELEASE)\\Subsystem\\Audio.o: Subsystem\\Audio.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Audio.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Audio.o
-
-$(OBJDIR_RELEASE)\\Subsystem\\Helper\\ILoggable.o: Subsystem\\Helper\\ILoggable.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Helper\\ILoggable.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\ILoggable.o
-
-$(OBJDIR_RELEASE)\\Subsystem\\Graphics.o: Subsystem\\Graphics.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Graphics.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Graphics.o
+$(OBJDIR_RELEASE)\\Subsystem\\Fonts.o: Subsystem\\Fonts.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Fonts.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Fonts.o
 
 $(OBJDIR_RELEASE)\\Subsystem\\Game.o: Subsystem\\Game.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Game.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Game.o
 
-$(OBJDIR_RELEASE)\\Subsystem\\Fonts.o: Subsystem\\Fonts.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Fonts.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Fonts.o
+$(OBJDIR_RELEASE)\\Subsystem\\Graphics.o: Subsystem\\Graphics.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Graphics.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Graphics.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Helper\\ILoggable.o: Subsystem\\Helper\\ILoggable.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Helper\\ILoggable.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\ILoggable.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Helper\\Logger.o: Subsystem\\Helper\\Logger.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Helper\\Logger.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Helper\\Logger.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Vendor\\lodepng.o: Subsystem\\Vendor\\lodepng.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Vendor\\lodepng.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Vendor\\lodepng.o
+
+$(OBJDIR_RELEASE)\\TestGame.o: TestGame.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c TestGame.cpp -o $(OBJDIR_RELEASE)\\TestGame.o
+
+$(OBJDIR_RELEASE)\\main.o: main.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)\\main.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Audio.o: Subsystem\\Audio.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Audio.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Audio.o
 
 $(OBJDIR_RELEASE)\\Subsystem\\Engine.o: Subsystem\\Engine.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Engine.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Engine.o
 
+$(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexBufferLayout.o: Subsystem\\Component\\Graphics\\VertexBufferLayout.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Component\\Graphics\\VertexBufferLayout.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexBufferLayout.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexBuffer.o: Subsystem\\Component\\Graphics\\VertexBuffer.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Component\\Graphics\\VertexBuffer.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexBuffer.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexArray.o: Subsystem\\Component\\Graphics\\VertexArray.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Component\\Graphics\\VertexArray.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\VertexArray.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\Texture.o: Subsystem\\Component\\Graphics\\Texture.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Component\\Graphics\\Texture.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\Texture.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\Shader.o: Subsystem\\Component\\Graphics\\Shader.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Component\\Graphics\\Shader.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\Shader.o
+
+$(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\IndexBuffer.o: Subsystem\\Component\\Graphics\\IndexBuffer.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Subsystem\\Component\\Graphics\\IndexBuffer.cpp -o $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics\\IndexBuffer.o
+
 clean_release: 
 	cmd /c del /f $(OBJ_RELEASE) $(OUT_RELEASE)
 	cmd /c rd bin\\Release
-	cmd /c rd $(OBJDIR_RELEASE)
-	cmd /c rd $(OBJDIR_RELEASE)\\Subsystem\\Utility
-	cmd /c rd $(OBJDIR_RELEASE)\\Subsystem\\Helper
 	cmd /c rd $(OBJDIR_RELEASE)\\Subsystem
+	cmd /c rd $(OBJDIR_RELEASE)\\Subsystem\\Helper
+	cmd /c rd $(OBJDIR_RELEASE)\\Subsystem\\Vendor
+	cmd /c rd $(OBJDIR_RELEASE)
+	cmd /c rd $(OBJDIR_RELEASE)\\Subsystem\\Component\\Graphics
 
 .PHONY: before_debug after_debug clean_debug before_release after_release clean_release
 

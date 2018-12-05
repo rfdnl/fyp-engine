@@ -18,11 +18,11 @@ bool Engine::Initialize(){
 
 void Engine::Start(){
     fonts.Add("Arial20", "fonts/arial.ttf", 20);
-    graphics.Create("Window title");
+    graphics.Create("Window title", 800, 450, 50, 50);
     audio.NewSource("test");
     audio.NewBuffer("tick", "audio/tick.wav");
 	if (audio.CanPlay("test")) audio.Play("test", "tick");
-    texture = graphics.NewTexture("images/test.png");
+    //texture = graphics.NewTexture("images/test.png");
 }
 
 void Engine::InputProcessing(){
@@ -34,7 +34,7 @@ void Engine::Update(std::chrono::duration<double> deltaTime){
 }
 
 void Engine::Draw(){
-	graphics.Draw(texture);
+	//graphics.Draw(texture);
     graphics.Draw();
 }
 

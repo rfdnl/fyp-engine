@@ -15,7 +15,7 @@ class Engine : public ILoggable
     Fonts fonts;
     Graphics graphics;
     Audio audio;
-public:
+protected:
     Engine(std::shared_ptr<Logger> logPtr):
         ILoggable(logPtr, "Engine"),
         fonts(logPtr),

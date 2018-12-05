@@ -2,18 +2,18 @@
 #include <cmath>
 
 bool Game::IsRunning(){
-    return engine.IsRunning() && engine.IsOpen();
+    return Engine::IsRunning() && Engine::IsOpen();
 }
 
 // first game loop, CPU: 23%
 void Game::Run(){
-    _Init();
-    _Start();
+    Engine::Initialize();
+    Engine::Start();
     while(IsRunning()){
 		frameStart = std::chrono::high_resolution_clock::now();
-        _InputProcessing();
-        _Update();
-        _Draw();
+        Engine::InputProcessing();
+        Engine::Update(frameMaxDuration);
+        Engine::Draw();
 		frameEnd = std::chrono::high_resolution_clock::now();
 		deltaTime = frameEnd - frameStart;
 
@@ -26,16 +26,16 @@ void Game::Run(){
 		printFPStime += deltaTime;
 		frames++;
     }
-    _End();
+    Engine::End();
 }
 
 // second game loop: CPU : 33 %
 void Game::Run2(){
     SetMaxFPS(60);
-    _Init();	// default engine's  configuration
-    Init();		// allow developer to change engine's configuration
-    _Start();	// load default contents
-    Start();	// allow developer to load contents
+    Engine::Initialize();	// default engine's  configuration
+    this->Init();		// allow developer to change engine's configuration
+    Engine::Start();	// load default contents
+    this->Start();	// allow developer to load contents
 
     frameStart = std::chrono::high_resolution_clock::now();
     while(IsRunning()){
@@ -45,11 +45,11 @@ void Game::Run2(){
 		frameDuration += deltaTime;
 
 		while(frameDuration >= frameMaxDuration){
-			_InputProcessing(); // store input flags
-			_Update(); // update engine
-			Update(frameMaxDuration);
-			Draw(); // allow developer to determine what to be drawn
-			_Draw(); // draw all
+			Engine::InputProcessing(); // store input flags
+			Engine::Update(frameMaxDuration); // update engine
+			this->Update(frameMaxDuration);
+			this->Draw(); // allow developer to determine what to be drawn
+			Engine::Draw(); // draw all
 			frameDuration -= frameMaxDuration;
 			frames++;
 
@@ -64,32 +64,8 @@ void Game::Run2(){
 		runTime += deltaTime;
 		printFPStime += deltaTime;
     }
-    End(); // allow developer to do anything before release the engine
-    _End(); // release the engine
-}
-
-void Game::_Init(){
-    engine.Initialize();
-}
-
-void Game::_Start(){
-    engine.Start();
-}
-
-void Game::_InputProcessing(){
-    engine.InputProcessing();
-}
-
-void Game::_Update(){
-    engine.Update(frameMaxDuration);
-}
-
-void Game::_Draw(){
-    engine.Draw();
-}
-
-void Game::_End(){
-    engine.End();
+    this->End(); // allow developer to do anything before release the engine
+    Engine::End(); // release the engine
 }
 
 void Game::SetMaxFPS(int n){
