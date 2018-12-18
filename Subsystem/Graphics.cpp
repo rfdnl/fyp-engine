@@ -94,8 +94,12 @@ bool Graphics::InitGraphics(int width, int height, int x, int y){
 		ERROR(ss << "GLEW init failed - " << glewGetErrorString(err));
 		return false;
 	}
-	// test end
 
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330 core");
+	ImGui::StyleColorsDark();
+	// test end
 
     glCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
 
@@ -110,18 +114,18 @@ bool Graphics::InitGraphics(int width, int height, int x, int y){
 	// Make some OpenGL properties better for 2D and enable alpha channel.
 	glCall(glDisable(GL_CULL_FACE));
 	glCall(glDisable(GL_DEPTH_TEST));
-	glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	glCall(glEnable(GL_BLEND));
+	glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	glCall(glDisable(GL_ALPHA_TEST));
 	//if (CheckError("InitGraphics")) return false;
 	INFO(ss << "OpenGL v" << glGetString(GL_VERSION));
 
 	// test start
 	float position[] = {
-		-0.5f, -0.5f,	// 0
-		0.5f, -0.5f, 	// 1
-		0.5f, 0.5f, 	// 2
-		-0.5f, 0.5f		// 3
+		100.0f, 100.0f, 0.0f, 0.0f,	// 0
+		200.0f, 100.0f, 1.0f, 0.0f,	// 1
+		200.0f, 200.0f, 1.0f, 1.0f, 	// 2
+		100.0f, 200.0f, 0.0f, 1.0f	// 3
 	};
 
 	unsigned int indices[] = {
@@ -130,13 +134,20 @@ bool Graphics::InitGraphics(int width, int height, int x, int y){
 	};
 
 	va = std::make_shared<VertexArray>();
-	vb = std::make_shared<VertexBuffer>(position, 4 * 2 * sizeof(float));
+	vb = std::make_shared<VertexBuffer>(position, 4 * 4 * sizeof(float));
+	layout->Push<float>(2);
 	layout->Push<float>(2);
 	va->AddBuffer(*vb, *layout);
 	ib = std::make_shared<IndexBuffer>(indices, 3 * 2);
+
 	shader = std::make_shared<Shader>("shader/Basic.shader");
 	shader->Bind();
 	shader->SetUniform4f("myColor", red, 0.3f, 0.8f, 1.0f);
+
+	texture = std::make_shared<Texture>("images/test.png");
+	texture->Bind();
+	shader->SetUniform1i("u_Texture", 0);
+
 	va->Unbind();
 	vb->Unbind();
 	ib->Unbind();
@@ -170,6 +181,7 @@ void Graphics::Close(){
     ib.reset();
     layout.reset();
     shader.reset();
+    texture.reset();
 }
 
 bool Graphics::CheckError(std::string functionName, int line){
@@ -184,7 +196,6 @@ bool Graphics::CheckError(std::string functionName, int line){
 void Graphics::Draw(){
 	if (isOpen){
 		glCall(glClear( GL_COLOR_BUFFER_BIT ));
-
 		/*
 		for(unsigned int i = 0; i < onFrame.size(); i++){
 			std::shared_ptr<Texture> texture = onFrame[i];
@@ -198,21 +209,39 @@ void Graphics::Draw(){
 		*/
 
 		// test start
+		ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+		glm::mat4 mvp = proj * view * model;
+
 		shader->Bind();
 		shader->SetUniform4f("myColor", red, 0.3f, 0.8f, 1.0f);
+		shader->SetUniformMat4f("u_ModelViewProj", mvp);
 
 		Draw(*va, *ib, *shader);
 
+		float increment = 0.0f;
 		if (red > 1.0f) increment = -0.05f;
 		else if (red < 0.0f) increment = 0.05f;
 
 		red += increment;
+
+		{
+            ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        }
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// test end
 		glCall(glFlush());
 		glfwSwapBuffers(window);
 	}
 }
 
+/*
 std::shared_ptr<Texture> Graphics::NewTexture(const char* filename){
 	std::shared_ptr<Texture> texture = std::make_shared<Texture>(filename);
 	std::cout << "<" << texture.get()->Filename() << "> type: " << texture.get()->Type() << std::endl;
@@ -222,7 +251,7 @@ std::shared_ptr<Texture> Graphics::NewTexture(const char* filename){
 void Graphics::Draw(std::shared_ptr<Texture> texture){
 	onFrame.push_back(texture);
 }
-
+*/
 void Graphics::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {
 	/*
 		shader.Bind();
@@ -236,6 +265,12 @@ void Graphics::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 
 Graphics::~Graphics(){
 	std::cout << "~Graphics()" << std::endl;
+	// test start
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+	// test end
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }

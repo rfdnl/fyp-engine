@@ -39,8 +39,8 @@ protected:
     bool Audio_CanPlay(std::string sourceKey);
 
     // GRAPHICS
-	std::shared_ptr<Texture> Graphics_NewTexture(const char* filePath);
-	void Graphics_Draw(std::shared_ptr<Texture> texture);
+	//std::shared_ptr<Texture> Graphics_NewTexture(const char* filePath);
+	//void Graphics_Draw(std::shared_ptr<Texture> texture);
 
     // FONTS
     bool Fonts_Add(std::string fontKey, const char* fontPath, int fontSize);

@@ -18,7 +18,7 @@ bool Engine::Initialize(){
 
 void Engine::Start(){
     fonts.Add("Arial20", "fonts/arial.ttf", 20);
-    graphics.Create("Window title", 800, 450, 50, 50);
+    graphics.Create("Window title", 960, 540, 100, 100);
     audio.NewSource("test");
     audio.NewBuffer("tick", "audio/tick.wav");
 	if (audio.CanPlay("test")) audio.Play("test", "tick");
@@ -67,13 +67,16 @@ bool Engine::Audio_CanPlay(std::string sourceKey){
 }
 
 // GRAPHICS
+/*
 std::shared_ptr<Texture> Engine::Graphics_NewTexture(const char* filePath){
 	return graphics.NewTexture(filePath);
 }
 
+
 void Engine::Graphics_Draw(std::shared_ptr<Texture> texture){
 	graphics.Draw(texture);
 }
+*/
 
 // FONT
 bool Engine::Fonts_Add(std::string fontKey, const char* fontPath, int fontSize){

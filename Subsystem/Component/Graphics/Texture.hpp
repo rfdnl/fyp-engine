@@ -8,10 +8,25 @@
 
 #include "../../Helper/IncludeGL.hpp"
 #include "../../Helper/ILoggable.hpp"
-#include "../../Vendor/lodepng.h"
 #include "IDrawable.hpp"
 
-class Texture : public IDrawable{
+class Texture {
+private:
+	unsigned int id; //, width, height, bpp;
+	int width, height, bpp;
+	std::string filepath;
+
+public:
+	Texture(const std::string& path);
+	~Texture();
+
+	void Bind(unsigned int slot = 0) const;
+	void Unbind() const;
+
+	inline unsigned int Width() const { return width; }
+	inline unsigned int Height() const { return height; }
+};
+/*: public IDrawable{
 private:
 	unsigned int id;
 	std::string filename;
@@ -61,7 +76,7 @@ public:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			*/
+
 			// Enable the texture for OpenGL.
 			glCall(glEnable(GL_TEXTURE_2D));
 			glCall(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)); //GL_NEAREST = no smoothing
@@ -90,5 +105,6 @@ public:
 	std::string ErrorMsg() { return errorMsg; }
 	void Draw();
 };
+*/
 
 #endif // TEXTURE_HPP
