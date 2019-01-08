@@ -2,5 +2,6 @@
 
 int main(int argc, char* args[]){
     TestGame game;
-    game.Run2();
+    game.Run();
+
 }

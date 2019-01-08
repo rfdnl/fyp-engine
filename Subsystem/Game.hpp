@@ -18,6 +18,7 @@ private:
     virtual void Start() = 0;
     virtual void Update(std::chrono::duration<double> deltaTime) = 0;
     virtual void Draw() = 0;
+    virtual void ImGuiDraw(){}
     virtual void End() = 0;
     void SetMaxFPS(int n);
 public:
@@ -36,6 +37,7 @@ public:
         std::cout << "~Game()" << std::endl;
     }
 
+	Engine& GetEngine();
     void Run();
     void Run2();
 };

@@ -5,37 +5,13 @@ bool Game::IsRunning(){
     return Engine::IsRunning() && Engine::IsOpen();
 }
 
-// first game loop, CPU: 23%
-void Game::Run(){
-    Engine::Initialize();
-    Engine::Start();
-    while(IsRunning()){
-		frameStart = std::chrono::high_resolution_clock::now();
-        Engine::InputProcessing();
-        Engine::Update(frameMaxDuration);
-        Engine::Draw();
-		frameEnd = std::chrono::high_resolution_clock::now();
-		deltaTime = frameEnd - frameStart;
-
-		if (printFPStime >= std::chrono::seconds(1)){
-			std::cout << std::chrono::duration_cast<std::chrono::seconds>(runTime).count() << " sec, " << frames << " fps" << std::endl;
-			printFPStime -= std::chrono::seconds(1);
-			frames = 0;
-		}
-		runTime += deltaTime;
-		printFPStime += deltaTime;
-		frames++;
-    }
-    Engine::End();
-}
-
 // second game loop: CPU : 33 %
-void Game::Run2(){
+void Game::Run(){
     SetMaxFPS(60);
     Engine::Initialize();	// default engine's  configuration
     this->Init();		// allow developer to change engine's configuration
     Engine::Start();	// load default contents
-    this->Start();	// allow developer to load contents
+    this->Start();	// allow developer to load custom contents
 
     frameStart = std::chrono::high_resolution_clock::now();
     while(IsRunning()){
@@ -48,8 +24,15 @@ void Game::Run2(){
 			Engine::InputProcessing(); // store input flags
 			Engine::Update(frameMaxDuration); // update engine
 			this->Update(frameMaxDuration);
+
+			Engine::Graphics_ClearColor();
 			this->Draw(); // allow developer to determine what to be drawn
-			Engine::Draw(); // draw all
+			Engine::Graphics_ImGui_NewFrame();
+			this->ImGuiDraw();
+			Engine::Graphics_ImGui_Draw();
+			Engine::Graphics_Flush();
+
+			//Engine::Draw(); // draw all
 			frameDuration -= frameMaxDuration;
 			frames++;
 
@@ -66,6 +49,14 @@ void Game::Run2(){
     }
     this->End(); // allow developer to do anything before release the engine
     Engine::End(); // release the engine
+}
+
+Engine& Game::GetEngine(){
+	Engine* enginePtr = this;
+	Game* gamePtr = this;
+	std::cout << "Game ptr: " << gamePtr << std::endl;
+	std::cout << "Engine ptr: " << enginePtr << std::endl;
+	return *this;
 }
 
 void Game::SetMaxFPS(int n){

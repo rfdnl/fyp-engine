@@ -25,6 +25,7 @@ void Shader::Unbind() const{
 
 int Shader::GetUniformLocation(const std::string& name){
 	glCall(int location = glGetUniformLocation(buffer, name.c_str()));
+
 	if (uniformLocationCache.find(name) != uniformLocationCache.end())
 		return uniformLocationCache[name];
 
@@ -36,6 +37,11 @@ int Shader::GetUniformLocation(const std::string& name){
 }
 
 // set uniforms
+void Shader::SetUniformBool(const std::string& name, bool on){
+	int v = on? 1:0;
+	glCall(glUniform1i(GetUniformLocation(name), v));
+}
+
 void Shader::SetUniform1i(const std::string& name, int v){
 	glCall(glUniform1i(GetUniformLocation(name), v));
 }

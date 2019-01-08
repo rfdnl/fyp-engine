@@ -2,6 +2,12 @@
 
 bool Graphics::isOpen = false;
 
+Graphics::Graphics(std::shared_ptr<Logger> logPtr):
+	ILoggable(logPtr, "Grfx")
+{
+	std::cout << "Graphics()" << std::endl;
+}
+
 bool Graphics::InitWindow(){
     if (glfwInit() != GL_TRUE){
         ERROR("Cannot initialize GLFW");
@@ -74,10 +80,17 @@ bool Graphics::Create(const char* title, int width, int height, int x, int y){
     }
     isOpen = true;
     INFO("Window created");
+
     glfwSetWindowPos(window, x, y);
     glfwMakeContextCurrent(window);
     glfwShowWindow(window);
+
     glfwSetWindowCloseCallback(window, WindowClosing);
+    glfwSetKeyCallback(window, Input::KeyboardCallback);
+    glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
+    glfwSetCursorPosCallback(window, Input::MousePositionCallback);
+
+
     INFO("Window close callback set");
     return InitGraphics(width, height, x, y);
 }
@@ -101,7 +114,7 @@ bool Graphics::InitGraphics(int width, int height, int x, int y){
 	ImGui::StyleColorsDark();
 	// test end
 
-    glCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
+    SetClearColor(0.0f, 0.0f, 0.0f, 255.0f);
 
 	// The official code for "Setting Your Raster Position to a Pixel Location" (i.e. set up a camera for 2D screen)
 	glCall(glViewport(0, 0, width, height));
@@ -117,42 +130,15 @@ bool Graphics::InitGraphics(int width, int height, int x, int y){
 	glCall(glEnable(GL_BLEND));
 	glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	glCall(glDisable(GL_ALPHA_TEST));
+	//wireframe
+	//glCall(glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ));
+	//glCall(glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ));
+
 	//if (CheckError("InitGraphics")) return false;
 	INFO(ss << "OpenGL v" << glGetString(GL_VERSION));
 
 	// test start
-	float position[] = {
-		100.0f, 100.0f, 0.0f, 0.0f,	// 0
-		200.0f, 100.0f, 1.0f, 0.0f,	// 1
-		200.0f, 200.0f, 1.0f, 1.0f, 	// 2
-		100.0f, 200.0f, 0.0f, 1.0f	// 3
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	va = std::make_shared<VertexArray>();
-	vb = std::make_shared<VertexBuffer>(position, 4 * 4 * sizeof(float));
-	layout->Push<float>(2);
-	layout->Push<float>(2);
-	va->AddBuffer(*vb, *layout);
-	ib = std::make_shared<IndexBuffer>(indices, 3 * 2);
-
-	shader = std::make_shared<Shader>("shader/Basic.shader");
-	shader->Bind();
-	shader->SetUniform4f("myColor", red, 0.3f, 0.8f, 1.0f);
-
-	texture = std::make_shared<Texture>("images/test.png");
-	texture->Bind();
-	shader->SetUniform1i("u_Texture", 0);
-
-	va->Unbind();
-	vb->Unbind();
-	ib->Unbind();
-	shader->Unbind();
-
+	renderer = std::make_shared<Renderer>();
 	// test end
 
 	return true;
@@ -176,12 +162,7 @@ void Graphics::Close(){
     }
 
 	// clear memory here
-    va.reset();
-    vb.reset();
-    ib.reset();
-    layout.reset();
-    shader.reset();
-    texture.reset();
+    renderer.reset();
 }
 
 bool Graphics::CheckError(std::string functionName, int line){
@@ -193,74 +174,28 @@ bool Graphics::CheckError(std::string functionName, int line){
     return error;
 }
 
-void Graphics::Draw(){
-	if (isOpen){
-		glCall(glClear( GL_COLOR_BUFFER_BIT ));
-		/*
-		for(unsigned int i = 0; i < onFrame.size(); i++){
-			std::shared_ptr<Texture> texture = onFrame[i];
-			texture->Draw();
-			//CheckError("Draw");
-		}
-
-		std::vector<std::shared_ptr<Texture>> emptyFrame;
-		onFrame.clear();
-		onFrame.swap(emptyFrame);
-		*/
-
-		// test start
-		ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-		glm::mat4 mvp = proj * view * model;
-
-		shader->Bind();
-		shader->SetUniform4f("myColor", red, 0.3f, 0.8f, 1.0f);
-		shader->SetUniformMat4f("u_ModelViewProj", mvp);
-
-		Draw(*va, *ib, *shader);
-
-		float increment = 0.0f;
-		if (red > 1.0f) increment = -0.05f;
-		else if (red < 0.0f) increment = 0.05f;
-
-		red += increment;
-
-		{
-            ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        }
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		// test end
-		glCall(glFlush());
-		glfwSwapBuffers(window);
-	}
+void Graphics::SetClearColor(float red, float green, float blue, float alpha){
+	glCall(glClearColor(red, green, blue, alpha));
 }
 
-/*
-std::shared_ptr<Texture> Graphics::NewTexture(const char* filename){
-	std::shared_ptr<Texture> texture = std::make_shared<Texture>(filename);
-	std::cout << "<" << texture.get()->Filename() << "> type: " << texture.get()->Type() << std::endl;
-	return texture;
+void Graphics::ClearColor(){
+	glCall(glClear( GL_COLOR_BUFFER_BIT ));
 }
 
-void Graphics::Draw(std::shared_ptr<Texture> texture){
-	onFrame.push_back(texture);
+void Graphics::ImGui_NewFrame(){
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
 }
-*/
-void Graphics::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {
-	/*
-		shader.Bind();
-		shader.SetUniform4f();
-	*/
-	shader.Bind();
-	va.Bind();
-	ib.Bind();
-	glCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+
+void Graphics::ImGui_Draw(){
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Graphics::Flush(){
+	glCall(glFlush());
+	glfwSwapBuffers(window);
 }
 
 Graphics::~Graphics(){

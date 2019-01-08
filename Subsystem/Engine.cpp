@@ -17,8 +17,8 @@ bool Engine::Initialize(){
 }
 
 void Engine::Start(){
-    fonts.Add("Arial20", "fonts/arial.ttf", 20);
     graphics.Create("Window title", 960, 540, 100, 100);
+    fonts.Add("Arial20", "fonts/arial.ttf", 20);
     audio.NewSource("test");
     audio.NewBuffer("tick", "audio/tick.wav");
 	if (audio.CanPlay("test")) audio.Play("test", "tick");
@@ -31,11 +31,6 @@ void Engine::InputProcessing(){
 
 void Engine::Update(std::chrono::duration<double> deltaTime){
 	//
-}
-
-void Engine::Draw(){
-	//graphics.Draw(texture);
-    graphics.Draw();
 }
 
 void Engine::Exit(){
@@ -67,16 +62,34 @@ bool Engine::Audio_CanPlay(std::string sourceKey){
 }
 
 // GRAPHICS
-/*
-std::shared_ptr<Texture> Engine::Graphics_NewTexture(const char* filePath){
-	return graphics.NewTexture(filePath);
+void Engine::Graphics_SetBackgroundColor(float red, float green, float blue, float alpha){
+	graphics.SetClearColor(red, green, blue, alpha);
 }
 
-
-void Engine::Graphics_Draw(std::shared_ptr<Texture> texture){
-	graphics.Draw(texture);
+void Engine::Graphics_ClearColor(){
+	graphics.ClearColor();
 }
-*/
+
+void Engine::Graphics_ImGui_NewFrame(){
+	graphics.ImGui_NewFrame();
+}
+
+void Engine::Graphics_ImGui_Draw(){
+	graphics.ImGui_Draw();
+}
+
+void Engine::Graphics_Flush(){
+	graphics.Flush();
+}
+
+void Engine::Graphics_Draw(const Texture& texture, glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba)
+{
+	graphics.Draw(texture, translation, size, rotate, rgba);
+}
+
+void Engine::Graphics_DrawRect(glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba){
+	graphics.DrawRect(translation, size, rotate, rgba);
+}
 
 // FONT
 bool Engine::Fonts_Add(std::string fontKey, const char* fontPath, int fontSize){

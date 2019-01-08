@@ -3,7 +3,7 @@
 #include <stb_image/stb_image.h>
 
 Texture::Texture(const std::string& path)
-: id(0), filepath(path), width(0), height(0), bpp(0)
+: filepath(path), id(0), width(0), height(0), bpp(0)
 {
 	std::cout << "Texture()" << std::endl;
 
@@ -19,16 +19,6 @@ Texture::Texture(const std::string& path)
 			&height,
 			&bpp,
 			4);
-	/*
-	int error = lodepng::decode(image, width, height, filepath);
-	if (error == 0){
-		std::cout << "<" << filepath << "> loaded" << std::endl;
-		std::cout << "h: " << height << ", w: " << width << std::endl;
-		std::cout << "s: " << image.size() << ", id: " << id << std::endl;
-	} else {
-		std::cout << "<" << filepath << "> failed" << std::endl;
-	}
-	*/
 
 	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
@@ -40,6 +30,8 @@ Texture::Texture(const std::string& path)
 	if (image){
 		stbi_image_free(image);
 	}
+
+	std::cout << "<" << path << "> " << (image? "loaded!" : "failed to load!") << std::endl;
 }
 
 Texture::~Texture(){
