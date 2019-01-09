@@ -18,7 +18,7 @@ bool Engine::Initialize(){
 
 void Engine::Start(){
     graphics.Create("Window title", 960, 540, 100, 100);
-    fonts.Add("Arial20", "fonts/arial.ttf", 20);
+	fonts.Add("Arial20", "fonts/arial.ttf", 20);
     audio.NewSource("test");
     audio.NewBuffer("tick", "audio/tick.wav");
 	if (audio.CanPlay("test")) audio.Play("test", "tick");
@@ -82,8 +82,7 @@ void Engine::Graphics_Flush(){
 	graphics.Flush();
 }
 
-void Engine::Graphics_Draw(const Texture& texture, glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba)
-{
+void Engine::Graphics_Draw(const Texture& texture, glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba){
 	graphics.Draw(texture, translation, size, rotate, rgba);
 }
 

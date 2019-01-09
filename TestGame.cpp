@@ -4,6 +4,7 @@
 #include "Subsystem/Test/TestRect.hpp"
 #include "Subsystem/Test/TestTexture.hpp"
 #include "Subsystem/Test/TestInput.hpp"
+#include "Subsystem/Test/TestFonts.hpp"
 
 TestGame::TestGame()
 //:color{ 0.2f, 0.3f, 0.8f, 1.0f }
@@ -26,6 +27,7 @@ void TestGame::Start(){
 	testMenu->RegisterTest<TestRect>("Rectangle");
 	testMenu->RegisterTest<TestTexture>("Texture");
 	testMenu->RegisterTest<TestInput>("Input");
+	testMenu->RegisterTest<TestFonts>("Fonts");
 	// test end
 }
 

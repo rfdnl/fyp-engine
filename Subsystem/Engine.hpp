@@ -79,6 +79,13 @@ public:
 
     // FONTS
     bool Fonts_Add(std::string fontKey, const char* fontPath, int fontSize);
+    void Fonts_Write(std::string text, float x, float y, float scale, glm::vec3 color){
+		fonts.Write(text, x, y, scale, color);
+    }
+    void Fonts_Clear(){
+		fonts.Clear();
+    }
+
 };
 
 #endif // ENGINE_HPP
