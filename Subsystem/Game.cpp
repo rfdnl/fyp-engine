@@ -1,6 +1,21 @@
 #include "Game.hpp"
 #include <cmath>
 
+Game::Game():
+	Engine(std::make_shared<Logger>("log.txt")),
+	printFPStime(std::chrono::duration<double>::zero()),
+	runTime(std::chrono::duration<double>::zero()),
+	deltaTime(std::chrono::duration<double>::zero()),
+	frameMaxDuration(std::chrono::duration<double>::zero()),
+	frameDuration(std::chrono::duration<double>::zero())
+{
+	std::cout << "Game()" << std::endl;
+}
+
+Game::~Game(){
+	std::cout << "~Game()" << std::endl;
+}
+
 bool Game::IsRunning(){
     return Engine::IsRunning() && Engine::IsOpen();
 }

@@ -1,19 +1,16 @@
 #include "Shader.hpp"
-#include <fstream>
-#include <sstream>
 
-Shader::Shader(const std::string& filepath):filepath(filepath), buffer(0)
-{
-	std::cout << "Shader()" << std::endl;
-	ShaderProgramSource source = ParseShader(filepath);
-	buffer = CreateShader(source.VertexSource, source.FragmentSource);
-}
-
-Shader::~Shader(){
+void Shader::Close(){
 	std::cout << "~Shader()" << std::endl;
 	glCall(glDeleteProgram(buffer));
 }
 
+void Shader::Init(const std::string& filepath){
+	this->filepath = filepath;
+	std::cout << "Shader()" << std::endl;
+	ShaderProgramSource source = ParseShader(filepath);
+	buffer = CreateShader(source.VertexSource, source.FragmentSource);
+}
 
 void Shader::Bind() const{
 	glCall(glUseProgram(buffer));

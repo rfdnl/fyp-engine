@@ -1,6 +1,11 @@
 #include "Audio.hpp"
 #include <cstring>
 
+Audio::Audio(std::shared_ptr<Logger> logPtr):
+	ILoggable(logPtr, "Audio"),
+	listenerOri{ 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f }
+{}
+
 bool Audio::Initialize(){
 	if (!InitAlut()) return false;
 	if (!EnumerateDevice()) return false;
@@ -31,8 +36,8 @@ bool Audio::EnumerateDevice(){
 	return true;
 }
 
-void Audio::RetrieveDeviceList(const ALchar* devices){
-	const ALchar *device = devices, *next = devices + 1;
+void Audio::RetrieveDeviceList(const char* devices){
+	const char* device = devices, *next = devices + 1;
 	size_t len = 0;
 	std::cout << "Device list:" << std::endl;
 	std::cout << "------------" << std::endl;
@@ -54,7 +59,7 @@ void Audio::GetDefaultDeviceName(){
 	}
 }
 
-bool Audio::OpenDevice(const ALCchar* deviceName){
+bool Audio::OpenDevice(const char* deviceName){
 	device = alcOpenDevice(deviceName);
 	if (!device){
 		ERROR("OpenDevice - FAIL");
@@ -88,7 +93,7 @@ bool Audio::CreateContext(){
 // The list of devices is organized as a string devices
 // are separated with a NULL character and
 // the list is terminated by two NULL characters
-ALenum Audio::ToALformat(short channels, short bitdepth){
+int Audio::ToALformat(short channels, short bitdepth){
 	bool stereo = (channels > 1);
 
 	switch (bitdepth) {
@@ -108,7 +113,7 @@ ALenum Audio::ToALformat(short channels, short bitdepth){
 }
 
 bool Audio::CheckError(std::string functionName, int line, std::string filename, std::string comment){
-	ALenum error = alutGetError();
+	int error = alutGetError();
 	if (error != AL_NO_ERROR){
 		ERROR(ss << functionName << ", filename: " << filename << ", line: " << line << ", error: " << alutGetErrorString(error) << ", comment: " << comment);
 		return false;
@@ -118,8 +123,8 @@ bool Audio::CheckError(std::string functionName, int line, std::string filename,
 
 // request new sound ID
 void Audio::NewSource(std::string sourceKey){
-	ALuint source;
-	alGenSources((ALuint)1, &source);
+	unsigned int source;
+	alGenSources((unsigned int)1, &source);
 	CheckError("NewSource (GenSaus)");
 	alSourcef(source, AL_PITCH, 1);
 	CheckError("NewSource (SetPtch)");
@@ -135,7 +140,7 @@ void Audio::NewSource(std::string sourceKey){
 }
 
 bool Audio::NewBuffer(std::string audioKey, const char* filePath){
-	ALuint buffer = alutCreateBufferFromFile(filePath);
+	unsigned int buffer = alutCreateBufferFromFile(filePath);
 	if (buffer == AL_NONE) {
 		return CheckError("NewBuffer");
 	}
@@ -152,7 +157,7 @@ void Audio::Play(std::string sourceKey, std::string audioKey){
 }
 
 bool Audio::CanPlay(std::string sourceKey){
-	ALint sourceState;
+	int sourceState;
 	alGetSourcei(sources[sourceKey], AL_SOURCE_STATE, &sourceState);
 	CheckError("CanPlay - GetSource");
 	return sourceState != AL_PLAYING;

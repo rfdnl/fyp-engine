@@ -21,15 +21,13 @@ struct Character {
 class Fonts : public ILoggable
 {
     unsigned int VAO, VBO;
-	std::shared_ptr<Shader> shader; //
+	Shader shader; //
 	glm::mat4 projection = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
 	FT_Library freetypeLib;
     std::map<char, Character> Characters;
     std::map<std::string, FT_Face> fonts;
 public:
-    Fonts(std::shared_ptr<Logger> logPtr):ILoggable(logPtr, "Fonts")
-    {
-    }
+    Fonts(std::shared_ptr<Logger> logPtr);
     bool Initialize();
     void InitGraphics();
     bool Add(std::string fontKey, const char* fontPath, int fontSize);

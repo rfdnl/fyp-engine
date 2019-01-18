@@ -13,13 +13,8 @@ private:
 protected:
     std::ostringstream ss;
 
-    ILoggable(std::shared_ptr<Logger> logPtr, std::string className):logPtr(logPtr), className(className){
-        INFO(ss << CLASS_NAME << "(" << className << "), logPtr addr(" << logPtr.get() << "), count(" << logPtr.use_count() << ")");
-    }
-
-    ~ILoggable(){
-        INFO(ss << "~" << CLASS_NAME << "(" << className << "), logPtr addr(" << logPtr.get() << "), count(" << logPtr.use_count() << ")");
-    }
+    ILoggable(std::shared_ptr<Logger> logPtr, std::string className);
+    ~ILoggable();
 
     void INFO(std::ostream& ostr);
     void INFO(std::string message);

@@ -5,13 +5,8 @@
 
 class TestInput : public TestBase {
 public:
-	TestInput(Engine& engine) : TestBase(engine){
-		engine.Input_DEBUG(true);
-	}
-
-	~TestInput(){
-		engine.Input_DEBUG(false);
-	}
+	TestInput(Engine& engine);
+	~TestInput();
 };
 
 #endif // TEST_INPUT_HPP

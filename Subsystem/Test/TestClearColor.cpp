@@ -2,7 +2,11 @@
 
 TestClearColor::TestClearColor(Engine& engine)
 :TestBase(engine), color{ 0.2f, 0.3f, 0.8f, 1.0f }
-{}
+{
+}
+
+TestClearColor::~TestClearColor(){
+}
 
 void TestClearColor::Draw(){
 	engine.Graphics_SetBackgroundColor(color[0],color[1],color[2],color[3]);

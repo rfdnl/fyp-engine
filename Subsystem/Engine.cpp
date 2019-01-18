@@ -1,6 +1,13 @@
 #include "Engine.hpp"
 #include <iostream>
 
+Engine::Engine(std::shared_ptr<Logger> logPtr):
+	ILoggable(logPtr, "Engine"),
+	graphics(logPtr),
+	fonts(logPtr),
+	audio(logPtr)
+{}
+
 bool Engine::IsRunning(){
     return running;
 }
@@ -18,10 +25,13 @@ bool Engine::Initialize(){
 
 void Engine::Start(){
     graphics.Create("Window title", 960, 540, 100, 100);
+    renderer.Init();
 	fonts.Add("Arial20", "fonts/arial.ttf", 20);
     audio.NewSource("test");
     audio.NewBuffer("tick", "audio/tick.wav");
-	if (audio.CanPlay("test")) audio.Play("test", "tick");
+    audio.NewBuffer("tweak", "audio/tweak.wav");
+    audio.NewBuffer("explode", "audio/explode.wav");
+	//if (audio.CanPlay("test")) audio.Play("test", "tick");
     //texture = graphics.NewTexture("images/test.png");
 }
 
@@ -39,9 +49,10 @@ void Engine::Exit(){
 
 void Engine::End(){
 	INFO("End()");
-    graphics.Close();
+	renderer.Close();
     fonts.Clear();
     audio.End();
+    graphics.Close();
 }
 
 // AUDIO
@@ -82,16 +93,53 @@ void Engine::Graphics_Flush(){
 	graphics.Flush();
 }
 
-void Engine::Graphics_Draw(const Texture& texture, glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba){
-	graphics.Draw(texture, translation, size, rotate, rgba);
+void Engine::Render_Draw(const Texture& texture, glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba){
+	renderer.Draw(texture, translation, size, rotate, rgba);
 }
 
-void Engine::Graphics_DrawRect(glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba){
-	graphics.DrawRect(translation, size, rotate, rgba);
+void Engine::Render_DrawRect(glm::vec3 translation, glm::vec2 size, float rotate, glm::vec4 rgba){
+	renderer.DrawRect(translation, size, rotate, rgba);
+}
+
+// INPUT
+void Engine::Input_DEBUG(bool on){
+	Input::DEBUG = on;
+}
+
+bool Engine::Input_KeyPress(int key){
+	return Input::KeyPress(key);
+}
+
+bool Engine::Input_KeyRelease(int key){
+	return Input::KeyRelease(key);
+}
+
+bool Engine::Input_KeyRepeat(int key){
+	return Input::KeyRepeat(key);
+}
+
+bool Engine::Input_MousePress(int button){
+	return Input::MousePress(button);
+}
+
+bool Engine::Input_MouseRelease(int button){
+	return Input::MouseRelease(button);
+}
+
+void Engine::Input_MousePos(double& xpos, double& ypos){
+	Input::MousePos(xpos, ypos);
 }
 
 // FONT
 bool Engine::Fonts_Add(std::string fontKey, const char* fontPath, int fontSize){
 	return fonts.Add(fontKey, fontPath, fontSize);
+}
+
+void Engine::Fonts_Write(std::string text, float x, float y, float scale, glm::vec3 color){
+	fonts.Write(text, x, y, scale, color);
+}
+
+void Engine::Fonts_Clear(){
+	fonts.Clear();
 }
 

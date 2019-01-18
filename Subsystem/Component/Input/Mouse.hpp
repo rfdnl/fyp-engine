@@ -1,6 +1,7 @@
 #ifndef MOUSE_HPP
 #define MOUSE_HPP
 #include "../../Helper/IncludeGL.hpp"
+
 class Mouse {
 	static const int Button1		= GLFW_MOUSE_BUTTON_1;
 	static const int Button2		= GLFW_MOUSE_BUTTON_2;

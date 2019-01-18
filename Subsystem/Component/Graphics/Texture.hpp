@@ -7,8 +7,7 @@
 #include <iostream>
 
 #include "../../Helper/IncludeGL.hpp"
-#include "../../Helper/ILoggable.hpp"
-#include "IDrawable.hpp"
+#include <stb_image/stb_image.h>
 
 class Texture {
 private:
@@ -17,8 +16,8 @@ private:
 	int width, height, bpp;
 
 public:
-	Texture(const std::string& path);
-	~Texture();
+	void Init(const std::string& path);
+	void Close();
 
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;

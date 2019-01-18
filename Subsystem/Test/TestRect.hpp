@@ -1,7 +1,8 @@
 #ifndef TEST_RECT_HPP
 #define TEST_RECT_HPP
-#include "TestBase.hpp"
 
+#include "../Global.hpp"
+#include "TestBase.hpp"
 
 class TestRect : public TestBase
 {
@@ -11,22 +12,9 @@ class TestRect : public TestBase
 	float rotate = 0.0f;
 
 public:
-	TestRect(Engine& engine):TestBase(engine) {
-		//
-	}
-
-	void Draw() override {
-		engine.Graphics_DrawRect(translation, size, rotate, rgba);
-	}
-
-	void ImGuiDraw() override {
-		ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 500.0f);
-		ImGui::SliderFloat("Width", &size.x, 0.0f, 960.0f);
-		ImGui::SliderFloat("Height", &size.y, 0.0f, 540.0f);
-		ImGui::SliderFloat("Rotation", &rotate, 0.0f, 6.28318f);
-		ImGui::ColorEdit4("Color", &rgba.x);
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	}
+	TestRect(Engine& engine);
+	void Draw() override;
+	void ImGuiDraw() override;
 };
 
 #endif // TEST_SHADER_HPP

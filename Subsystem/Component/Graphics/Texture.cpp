@@ -1,10 +1,12 @@
 #include "Texture.hpp"
 
-#include <stb_image/stb_image.h>
+void Texture::Close(){
+	std::cout << "~Texture()" << std::endl;
+	glCall(glDeleteTextures(1, &id));
+}
 
-Texture::Texture(const std::string& path)
-: filepath(path), id(0), width(0), height(0), bpp(0)
-{
+void Texture::Init(const std::string& path){
+	this->filepath = path;
 	std::cout << "Texture()" << std::endl;
 
 	glCall(glGenTextures(1, &id));
@@ -32,11 +34,6 @@ Texture::Texture(const std::string& path)
 	}
 
 	std::cout << "<" << path << "> " << (image? "loaded!" : "failed to load!") << std::endl;
-}
-
-Texture::~Texture(){
-	std::cout << "~Texture()" << std::endl;
-	glCall(glDeleteTextures(1, &id));
 }
 
 void Texture::Bind(unsigned int slot) const {

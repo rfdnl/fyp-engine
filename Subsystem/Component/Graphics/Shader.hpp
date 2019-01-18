@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <unordered_map>
-#include "../../Helper/IncludeGL.hpp"
 #include <glm/glm.hpp>
+#include <fstream>
+#include <sstream>
+#include "../../Helper/IncludeGL.hpp"
 
 struct ShaderProgramSource{
 	std::string VertexSource;
@@ -22,8 +24,8 @@ private:
 	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 	ShaderProgramSource ParseShader(const std::string& filepath);
 public:
-	Shader(const std::string& filepath);
-	~Shader();
+	void Init(const std::string& filepath);
+	void Close();
 
 	void Bind() const;
 	void Unbind() const;

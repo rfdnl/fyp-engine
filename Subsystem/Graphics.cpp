@@ -85,7 +85,9 @@ bool Graphics::Create(const char* title, int width, int height, int x, int y){
     glfwMakeContextCurrent(window);
     glfwShowWindow(window);
 
+    // CALLBACKS
     glfwSetWindowCloseCallback(window, WindowClosing);
+    glfwSetWindowSizeCallback(window, Global::WindowResize);
     glfwSetKeyCallback(window, Input::KeyboardCallback);
     glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
     glfwSetCursorPosCallback(window, Input::MousePositionCallback);
@@ -137,10 +139,6 @@ bool Graphics::InitGraphics(int width, int height, int x, int y){
 	//if (CheckError("InitGraphics")) return false;
 	INFO(ss << "OpenGL v" << glGetString(GL_VERSION));
 
-	// test start
-	renderer = std::make_shared<Renderer>();
-	// test end
-
 	return true;
 }
 
@@ -160,9 +158,6 @@ void Graphics::Close(){
     if (isOpen){
 		WindowClosing(window);
     }
-
-	// clear memory here
-    renderer.reset();
 }
 
 bool Graphics::CheckError(std::string functionName, int line){
@@ -196,6 +191,10 @@ void Graphics::ImGui_Draw(){
 void Graphics::Flush(){
 	glCall(glFlush());
 	glfwSwapBuffers(window);
+}
+
+void Graphics::SetWindowSize(int width, int height){
+	glfwSetWindowSize(window, width, height);
 }
 
 Graphics::~Graphics(){

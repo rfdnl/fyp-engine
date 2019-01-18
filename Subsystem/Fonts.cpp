@@ -1,5 +1,8 @@
 #include "Fonts.hpp"
 
+Fonts::Fonts(std::shared_ptr<Logger> logPtr):ILoggable(logPtr, "Fonts")
+{}
+
 bool Fonts::Initialize(){
     INFO("Initialize()");
     if (FT_Init_FreeType(&freetypeLib)){
@@ -27,9 +30,9 @@ bool Fonts::Add(std::string fontKey, const char* fontPath, int fontSize){
 		glCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 		glCall(glBindVertexArray(0));
 
-		shader = std::make_shared<Shader>("shader/Text.shader");
-		shader->Bind();
-		shader->SetUniformMat4f("projection", projection);
+		shader.Init("shader/Text.shader");
+		shader.Bind();
+		shader.SetUniformMat4f("projection", projection);
 	}
     // test end
 
@@ -103,8 +106,8 @@ FT_Face Fonts::Get(std::string fontKey){
 void Fonts::Write(std::string& text, float& x, float& y, float& scale, glm::vec3& color)
 {
 	// Activate render state
-	shader->Bind();
-	shader->SetUniform3f("textColor", color.x, color.y, color.z);
+	shader.Bind();
+	shader.SetUniform3f("textColor", color.x, color.y, color.z);
 	glCall(glActiveTexture(GL_TEXTURE0));
 	glCall(glBindVertexArray(VAO));
 
@@ -145,6 +148,8 @@ void Fonts::Write(std::string& text, float& x, float& y, float& scale, glm::vec3
 }
 
 void Fonts::Clear(){
+	shader.Close();
+
     INFO("Clearing");
     INFO(ss << "Font total: " << fonts.size());
 

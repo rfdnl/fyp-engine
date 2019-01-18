@@ -8,6 +8,7 @@ private:
 	float color[4];
 public:
 	TestClearColor(Engine& engine);
+	~TestClearColor();
 	void Draw() override;
 	void ImGuiDraw() override;
 };

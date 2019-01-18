@@ -1,5 +1,13 @@
 #include "ILoggable.hpp"
 
+ILoggable::ILoggable(std::shared_ptr<Logger> logPtr, std::string className):logPtr(logPtr), className(className){
+	INFO(ss << CLASS_NAME << "(" << className << "), logPtr addr(" << logPtr.get() << "), count(" << logPtr.use_count() << ")");
+}
+
+ILoggable::~ILoggable(){
+	INFO(ss << "~" << CLASS_NAME << "(" << className << "), logPtr addr(" << logPtr.get() << "), count(" << logPtr.use_count() << ")");
+}
+
 void ILoggable::INFO(std::ostream& ostr){
     logPtr.get()->Info(className, ostr);
     ClearStream();

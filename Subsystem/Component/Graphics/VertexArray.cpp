@@ -1,11 +1,11 @@
 #include "VertexArray.hpp"
 
-VertexArray::VertexArray(){
+void VertexArray::Init(){
 	std::cout << "VertexArray()" << std::endl;
 	glCall(glGenVertexArrays(1, &buffer));
 }
 
-VertexArray::~VertexArray(){
+void VertexArray::Close(){
 	std::cout << "~VertexArray()" << std::endl;
 	glCall(glDeleteVertexArrays(1, &buffer));
 }

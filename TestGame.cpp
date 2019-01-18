@@ -5,6 +5,7 @@
 #include "Subsystem/Test/TestTexture.hpp"
 #include "Subsystem/Test/TestInput.hpp"
 #include "Subsystem/Test/TestFonts.hpp"
+#include "Subsystem/Test/TestBreakout.hpp"
 
 TestGame::TestGame()
 //:color{ 0.2f, 0.3f, 0.8f, 1.0f }
@@ -28,6 +29,7 @@ void TestGame::Start(){
 	testMenu->RegisterTest<TestTexture>("Texture");
 	testMenu->RegisterTest<TestInput>("Input");
 	testMenu->RegisterTest<TestFonts>("Fonts");
+	testMenu->RegisterTest<TestBreakout>("Breakout");
 	// test end
 }
 
@@ -56,6 +58,7 @@ void TestGame::ImGuiDraw(){
 		if (currentTest != testMenu && ImGui::Button("Menu")){
 			delete currentTest;
 			currentTest = testMenu;
+			Audio_Play("test", "tick");
 		}
 		currentTest->ImGuiDraw();
 		ImGui::End();

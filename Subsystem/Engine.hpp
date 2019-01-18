@@ -1,9 +1,12 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
+
 #include <memory>
 #include <iostream>
 #include <chrono>
 #include "Helper/ILoggable.hpp"
+#include "Component/Graphics/Texture.hpp"
+#include "Component/Graphics/Renderer.hpp"
 #include "Fonts.hpp"
 #include "Graphics.hpp"
 #include "Audio.hpp"
@@ -11,18 +14,13 @@
 
 class Engine : public ILoggable
 {
-	std::shared_ptr<Texture> texture;
     bool running = true;
     Graphics graphics;
     Fonts fonts;
     Audio audio;
+    Renderer renderer;
 protected:
-    Engine(std::shared_ptr<Logger> logPtr):
-        ILoggable(logPtr, "Engine"),
-        graphics(logPtr),
-        fonts(logPtr),
-        audio(logPtr)
-    {}
+    Engine(std::shared_ptr<Logger> logPtr);
     bool IsRunning();
     bool IsOpen();
     bool Initialize();
@@ -45,46 +43,23 @@ public:
     void Graphics_ImGui_NewFrame();
     void Graphics_ImGui_Draw();
     void Graphics_Flush();
-    void Graphics_Draw(const Texture& texture, glm::vec3 translation = glm::vec3(0.0f), glm::vec2 size = glm::vec2(10, 10), float rotate = 0.0f, glm::vec4 rgba = glm::vec4(1.0f));
-	void Graphics_DrawRect(glm::vec3 translation = glm::vec3(0.0f), glm::vec2 size = glm::vec2(10, 10), float rotate = 0.0f, glm::vec4 rgba = glm::vec4(1.0f));
+
+    void Render_Draw(const Texture& texture, glm::vec3 translation = glm::vec3(0.0f), glm::vec2 size = glm::vec2(10, 10), float rotate = 0.0f, glm::vec4 rgba = glm::vec4(1.0f));
+	void Render_DrawRect(glm::vec3 translation = glm::vec3(0.0f), glm::vec2 size = glm::vec2(10, 10), float rotate = 0.0f, glm::vec4 rgba = glm::vec4(1.0f));
 
 	// INPUT
-	void Input_DEBUG(bool on){
-		Input::DEBUG = on;
-	}
-
-	bool Input_KeyPress(int key){
-		return Input::KeyPress(key);
-	}
-
-	bool Input_KeyRelease(int key){
-		return Input::KeyRelease(key);
-	}
-
-	bool Input_KeyRepeat(int key){
-		return Input::KeyRepeat(key);
-	}
-
-	bool Input_MousePress(int button){
-		return Input::MousePress(button);
-	}
-
-	bool Input_MouseRelease(int button){
-		return Input::MouseRelease(button);
-	}
-
-	void Input_MousePos(double& xpos, double& ypos){
-		Input::MousePos(xpos, ypos);
-	}
+	void Input_DEBUG(bool on);
+	bool Input_KeyPress(int key);
+	bool Input_KeyRelease(int key);
+	bool Input_KeyRepeat(int key);
+	bool Input_MousePress(int button);
+	bool Input_MouseRelease(int button);
+	void Input_MousePos(double& xpos, double& ypos);
 
     // FONTS
     bool Fonts_Add(std::string fontKey, const char* fontPath, int fontSize);
-    void Fonts_Write(std::string text, float x, float y, float scale, glm::vec3 color){
-		fonts.Write(text, x, y, scale, color);
-    }
-    void Fonts_Clear(){
-		fonts.Clear();
-    }
+    void Fonts_Write(std::string text, float x, float y, float scale, glm::vec3 color);
+    void Fonts_Clear();
 
 };
 
