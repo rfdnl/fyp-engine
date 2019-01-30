@@ -6,6 +6,7 @@
 #include "Subsystem/Test/TestInput.hpp"
 #include "Subsystem/Test/TestFonts.hpp"
 #include "Subsystem/Test/TestBreakout.hpp"
+#include "Subsystem/Test/TestPhysics.hpp"
 
 TestGame::TestGame()
 //:color{ 0.2f, 0.3f, 0.8f, 1.0f }
@@ -30,6 +31,7 @@ void TestGame::Start(){
 	testMenu->RegisterTest<TestInput>("Input");
 	testMenu->RegisterTest<TestFonts>("Fonts");
 	testMenu->RegisterTest<TestBreakout>("Breakout");
+	testMenu->RegisterTest<TestPhysics>("Physics");
 	// test end
 }
 

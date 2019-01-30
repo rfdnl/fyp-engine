@@ -1,7 +1,7 @@
 #include "Renderer.hpp"
 
 Renderer::Renderer() :
-	proj(glm::ortho(0.0f, static_cast<float>(Global::ScreenWidth()), 0.0f, static_cast<float>(Global::ScreenHeight()), -1.0f, 1.0f)),
+	proj(glm::ortho(0.0f, static_cast<float>(Global::ScreenWidth()), static_cast<float>(Global::ScreenHeight()), 0.0f, -1.0f, 1.0f)),
 	view(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
 {}
 

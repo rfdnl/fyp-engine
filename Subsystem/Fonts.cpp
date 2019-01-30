@@ -1,6 +1,9 @@
 #include "Fonts.hpp"
 
-Fonts::Fonts(std::shared_ptr<Logger> logPtr):ILoggable(logPtr, "Fonts")
+Fonts::Fonts(std::shared_ptr<Logger> logPtr)
+:
+ILoggable(logPtr, "Fonts"),
+projection(glm::ortho(0.0f, static_cast<float>(Global::ScreenWidth()), static_cast<float>(Global::ScreenHeight()), 0.0f, -1.0f, 1.0f))
 {}
 
 bool Fonts::Initialize(){

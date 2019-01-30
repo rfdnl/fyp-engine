@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Component/Graphics/Shader.hpp"
+#include "Global.hpp"
 #include <map>
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -22,7 +23,7 @@ class Fonts : public ILoggable
 {
     unsigned int VAO, VBO;
 	Shader shader; //
-	glm::mat4 projection = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+	glm::mat4 projection;
 	FT_Library freetypeLib;
     std::map<char, Character> Characters;
     std::map<std::string, FT_Face> fonts;
